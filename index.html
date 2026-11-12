@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#1E3A5F" />
+  <meta name="theme-color" content="#0F172A" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>北2｜北海道六日遊行程表 (2026/11/25 - 11/30)</title>
+  <title>北2｜北海道六日遊極致攻略手冊 (2026/11/25 - 11/30)</title>
   <style>
     :root {
-      --bg: #F4F7FB;
+      --bg: #F1F5F9;
       --surface: #FFFFFF;
-      --surface-alt: #EDF3FA;
+      --surface-alt: #F8FAFC;
+      --surface-card: #EFF6FF;
       --text: #0F172A;
       --text-secondary: #475569;
       --text-muted: #64748B;
@@ -20,36 +21,55 @@
       --primary-soft: #E0F2FE;
       --accent: #EA580C;
       --accent-soft: #FFEDD5;
-      --warning: #D97706;
+      --warning: #B45309;
       --warning-bg: #FEF3C7;
       --warning-border: #F59E0B;
       --success: #059669;
       --success-bg: #D1FAE5;
+      --purple: #7C3AED;
+      --purple-soft: #EDE9FE;
+      --tip-bg: #F0FDF4;
+      --tip-border: #86EFAC;
+      --tip-text: #166534;
+      --photo-bg: #FAF5FF;
+      --photo-border: #D8B4FE;
+      --photo-text: #6B21A8;
       --border: #E2E8F0;
-      --shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
-      --radius: 14px;
-      --radius-sm: 10px;
+      --shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.12);
+      --radius: 16px;
+      --radius-sm: 11px;
     }
 
     [data-theme="dark"] {
-      --bg: #0B1120;
-      --surface: #1E293B;
-      --surface-alt: #152033;
+      --bg: #070B14;
+      --surface: #111827;
+      --surface-alt: #1E293B;
+      --surface-card: #162235;
       --text: #F8FAFC;
       --text-secondary: #CBD5E1;
       --text-muted: #94A3B8;
       --primary: #38BDF8;
       --primary-light: #38BDF8;
-      --primary-soft: rgba(56, 189, 248, 0.15);
+      --primary-soft: rgba(56, 189, 248, 0.16);
       --accent: #FB923C;
       --accent-soft: rgba(251, 146, 60, 0.16);
       --warning: #FBBF24;
-      --warning-bg: rgba(245, 158, 11, 0.16);
+      --warning-bg: rgba(245, 158, 11, 0.14);
       --warning-border: #D97706;
       --success: #34D399;
       --success-bg: rgba(16, 185, 129, 0.16);
+      --purple: #A78BFA;
+      --purple-soft: rgba(167, 139, 250, 0.16);
+      --tip-bg: rgba(16, 185, 129, 0.1);
+      --tip-border: rgba(52, 211, 153, 0.35);
+      --tip-text: #6EE7B7;
+      --photo-bg: rgba(167, 139, 250, 0.1);
+      --photo-border: rgba(167, 139, 250, 0.35);
+      --photo-text: #DDD6FE;
       --border: #334155;
-      --shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.6);
     }
 
     * {
@@ -66,85 +86,155 @@
       font-size: 15px;
       line-height: 1.55;
       scroll-behavior: smooth;
+      overflow-x: hidden;
     }
+
+    /* Snowfall Canvas */
+    #snowCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.78;
+      transition: opacity 0.3s ease;
+    }
+    #snowCanvas.hidden { opacity: 0; }
 
     /* Top Header */
     .app-header {
-      background: linear-gradient(135deg, #162B47 0%, #1E3A5F 55%, #0369A1 100%);
+      background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 50%, #0284C7 100%);
       color: #FFFFFF;
-      padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px;
+      padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 16px;
       position: relative;
+      overflow: hidden;
+    }
+
+    .app-header::after {
+      content: "❄️";
+      position: absolute;
+      right: -12px;
+      top: 10px;
+      font-size: 110px;
+      opacity: 0.06;
+      pointer-events: none;
+      transform: rotate(15deg);
     }
 
     .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
     }
 
     .trip-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       background: rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(4px);
-      padding: 3px 10px;
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
       border-radius: 999px;
       font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .header-actions {
       display: flex;
-      gap: 6px;
+      gap: 5px;
+      flex-wrap: wrap;
     }
 
     .icon-btn {
       background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(6px);
       color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.24);
       border-radius: 10px;
-      padding: 6px 10px;
-      font-size: 13px;
-      font-weight: 600;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      min-height: 36px;
+      gap: 3px;
+      min-height: 34px;
+      transition: transform 0.1s, background 0.15s;
     }
 
-    .icon-btn:active {
-      transform: scale(0.97);
-    }
+    .icon-btn:active { transform: scale(0.95); }
+    .icon-btn.off { opacity: 0.55; }
 
     .trip-title {
-      margin: 8px 0 2px;
-      font-size: 21px;
-      font-weight: 800;
+      margin: 10px 0 3px;
+      font-size: 20px;
+      font-weight: 900;
       letter-spacing: 0.3px;
+      position: relative;
+      z-index: 2;
     }
 
     .trip-subtitle {
       margin: 0;
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.85);
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.88);
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px 12px;
       font-variant-numeric: tabular-nums;
+      position: relative;
+      z-index: 2;
     }
 
-    /* Sticky Day Tabs */
+    /* Live Dashboard Bar inside Header */
+    .live-dashboard {
+      margin-top: 12px;
+      background: rgba(15, 23, 42, 0.42);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 9px 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .countdown-box { font-size: 12px; color: rgba(255, 255, 255, 0.85); }
+    .countdown-value {
+      font-size: 15px;
+      font-weight: 800;
+      color: #38BDF8;
+      font-variant-numeric: tabular-nums;
+      margin-top: 1px;
+    }
+
+    .clock-pair {
+      text-align: right;
+      font-size: 11.5px;
+      line-height: 1.4;
+      font-variant-numeric: tabular-nums;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      padding-left: 10px;
+    }
+    .clock-jp { color: #FDE047; font-weight: 700; }
+    .clock-tw { color: rgba(255, 255, 255, 0.82); }
+
+    /* Sticky Navigation Tabs */
     .sticky-nav {
       position: sticky;
       top: 0;
       z-index: 100;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
     }
 
     .tab-bar {
@@ -155,81 +245,69 @@
       padding: 8px 10px;
       gap: 6px;
     }
-
-    .tab-bar::-webkit-scrollbar {
-      display: none;
-    }
+    .tab-bar::-webkit-scrollbar { display: none; }
 
     .tab-btn {
       flex: 0 0 auto;
       border: 1px solid var(--border);
       background: var(--surface-alt);
       color: var(--text-secondary);
-      border-radius: 10px;
-      padding: 7px 12px;
-      font-size: 13px;
+      border-radius: 11px;
+      padding: 6px 11px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-width: 72px;
-      min-height: 46px;
+      min-width: 68px;
+      min-height: 44px;
       justify-content: center;
-      transition: all 0.15s ease;
+      transition: all 0.16s ease;
       font-variant-numeric: tabular-nums;
     }
 
-    .tab-btn .tab-main {
-      font-size: 13px;
-      line-height: 1.2;
-    }
-
-    .tab-btn .tab-sub {
-      font-size: 11px;
-      font-weight: 500;
-      opacity: 0.85;
-      margin-top: 2px;
-    }
+    .tab-btn .tab-main { font-size: 13px; line-height: 1.2; }
+    .tab-btn .tab-sub { font-size: 10.5px; font-weight: 600; opacity: 0.85; margin-top: 2px; }
 
     .tab-btn.active {
       background: var(--primary-light);
       color: #FFFFFF;
       border-color: var(--primary-light);
-      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+      transform: translateY(-1px);
     }
-
-    [data-theme="dark"] .tab-btn.active {
-      color: #0B1120;
-    }
+    [data-theme="dark"] .tab-btn.active { color: #070B14; }
 
     /* Main Content Container */
     .container {
-      max-width: 640px;
+      max-width: 660px;
       margin: 0 auto;
-      padding: 14px 12px calc(80px + env(safe-area-inset-bottom, 0px));
+      padding: 14px 12px calc(92px + env(safe-area-inset-bottom, 0px));
     }
 
-    .tab-panel {
-      display: none;
-      animation: fadeIn 0.18s ease-out;
-    }
-
-    .tab-panel.active {
-      display: block;
-    }
+    .tab-panel { display: none; animation: fadeIn 0.2s ease-out; }
+    .tab-panel.active { display: block; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Highlight Pulse animation for Search Jump */
+    @keyframes pulseHighlight {
+      0% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); border-color: var(--accent); }
+      50% { box-shadow: 0 0 0 8px rgba(234, 88, 12, 0); border-color: var(--accent); }
+      100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); }
+    }
+    .pulse-focus { animation: pulseHighlight 1.6s ease 2; }
 
     /* Cards */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px;
+      padding: 15px;
       margin-bottom: 14px;
       box-shadow: var(--shadow);
     }
@@ -239,7 +317,8 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 11px;
+      flex-wrap: wrap;
     }
 
     .card-title {
@@ -252,75 +331,78 @@
       color: var(--text);
     }
 
+    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 2px 8px;
-      border-radius: 6px;
+      padding: 3px 8px;
+      border-radius: 7px;
       font-size: 11.5px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
-    .badge-primary {
-      background: var(--primary-soft);
-      color: var(--primary-light);
+    .badge-primary { background: var(--primary-soft); color: var(--primary-light); }
+    .badge-accent { background: var(--accent-soft); color: var(--accent); }
+    .badge-warn { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); }
+    .badge-success { background: var(--success-bg); color: var(--success); }
+    .badge-purple { background: var(--purple-soft); color: var(--purple); }
+
+    /* Progress Bar */
+    .progress-wrap {
+      width: 100%;
+      height: 7px;
+      background: var(--surface-alt);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 6px 0 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-light), var(--success));
+      border-radius: 999px;
+      transition: width 0.3s ease;
     }
 
-    .badge-accent {
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    .badge-warn {
-      background: var(--warning-bg);
-      color: var(--warning);
-      border: 1px solid var(--warning-border);
-    }
-
-    .badge-success {
-      background: var(--success-bg);
-      color: var(--success);
-    }
-
-    /* Booking Grid */
-    .flight-box {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
+    /* Booking Grid & Budget Table */
+    .flight-box { display: grid; grid-template-columns: 1fr; gap: 10px; }
     .flight-item {
       background: var(--surface-alt);
       border-radius: var(--radius-sm);
-      padding: 12px;
+      padding: 13px;
       border-left: 4px solid var(--primary-light);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
-
     .flight-route {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 6px;
+      margin-top: 8px;
       font-variant-numeric: tabular-nums;
     }
+    .flight-time { font-size: 20px; font-weight: 900; }
+    .flight-airport { font-size: 12px; color: var(--text-secondary); }
+    .flight-arrow { color: var(--primary-light); font-weight: 800; font-size: 13px; }
 
-    .flight-time {
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .flight-airport {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .flight-arrow {
-      color: var(--primary-light);
-      font-weight: 700;
+    .budget-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 13px;
+      margin-top: 4px;
     }
+    .budget-table th, .budget-table td {
+      padding: 7px 6px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .budget-table th { color: var(--text-muted); font-size: 12px; font-weight: 700; }
+    .budget-table td.amt { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .budget-total-row td { border-top: 2px solid var(--border); border-bottom: none; font-weight: 900; color: var(--primary-light); font-size: 14px; padding-top: 9px; }
 
     /* Alert Banner */
     .alert-box {
@@ -331,21 +413,12 @@
       padding: 10px 12px;
       font-size: 13.5px;
       margin-top: 10px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
-
-    .alert-box strong {
-      color: var(--accent);
-    }
+    .alert-box strong { color: var(--accent); }
 
     /* Action Buttons */
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -359,135 +432,148 @@
       cursor: pointer;
       border: 1px solid transparent;
       min-height: 38px;
-      transition: transform 0.1s;
+      transition: transform 0.1s, opacity 0.15s;
     }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn-primary {
-      background: var(--primary-light);
-      color: #FFFFFF;
-    }
-
-    [data-theme="dark"] .btn-primary {
-      color: #0B1120;
-    }
-
-    .btn-outline {
-      background: var(--surface);
-      color: var(--primary-light);
-      border-color: var(--border);
-    }
-
-    .btn-warn {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-color: rgba(234, 88, 12, 0.3);
-    }
-
-    .btn-sm {
-      padding: 5px 10px;
-      font-size: 12px;
-      min-height: 32px;
-      border-radius: 7px;
-    }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: var(--primary-light); color: #FFFFFF; }
+    [data-theme="dark"] .btn-primary { color: #070B14; }
+    .btn-outline { background: var(--surface); color: var(--primary-light); border-color: var(--border); }
+    .btn-warn { background: var(--accent-soft); color: var(--accent); border-color: rgba(234, 88, 12, 0.35); }
+    .btn-success { background: var(--success-bg); color: var(--success); border-color: rgba(5, 150, 105, 0.3); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; min-height: 32px; border-radius: 8px; }
 
     /* Interactive Checklist */
-    .checklist {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
+    .checklist { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
     .check-item {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      padding: 11px;
+      padding: 11px 12px;
       background: var(--surface-alt);
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
       cursor: pointer;
       transition: all 0.15s ease;
     }
-
-    .check-item.checked {
-      opacity: 0.68;
-      background: var(--bg);
-    }
-
-    .check-item.checked .check-title {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-
+    .check-item.checked { opacity: 0.65; background: var(--bg); }
+    .check-item.checked .check-title { text-decoration: line-through; color: var(--text-muted); }
     .check-item input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      margin-top: 2px;
-      accent-color: var(--success);
-      flex-shrink: 0;
-      cursor: pointer;
+      width: 20px; height: 20px; margin-top: 2px;
+      accent-color: var(--success); flex-shrink: 0; cursor: pointer;
     }
+    .check-body { flex: 1; min-width: 0; }
+    .check-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; word-break: break-word; }
+    .check-meta { font-size: 12.5px; color: var(--text-secondary); word-break: break-word; }
 
-    .check-body {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .check-title {
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 3px;
-      word-break: break-word;
-    }
-
-    .check-meta {
-      font-size: 12.5px;
-      color: var(--text-secondary);
-      word-break: break-word;
-    }
-
-    /* Day Hero Banner */
+    /* Day Hero Banners (Thematic Gradients per Day) */
     .day-banner {
-      background: linear-gradient(135deg, #1E3A5F 0%, #0284C7 100%);
       color: #FFFFFF;
       border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 14px;
+      padding: 15px 16px;
+      margin-bottom: 12px;
       box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
     }
+    .day-banner-d1 { background: linear-gradient(135deg, #1E3A5F 0%, #0284C7 100%); }
+    .day-banner-d2 { background: linear-gradient(135deg, #312E81 0%, #4F46E5 100%); }
+    .day-banner-d3 { background: linear-gradient(135deg, #0F172A 0%, #0369A1 60%, #38BDF8 100%); }
+    .day-banner-d4 { background: linear-gradient(135deg, #7C2D12 0%, #C2410C 55%, #F59E0B 100%); }
+    .day-banner-d5 { background: linear-gradient(135deg, #064E3B 0%, #059669 65%, #D97706 100%); }
+    .day-banner-d6 { background: linear-gradient(135deg, #1E293B 0%, #0284C7 100%); }
+    .day-banner-prep { background: linear-gradient(135deg, #4C1D95 0%, #7C3AED 100%); }
+    .day-banner-tools { background: linear-gradient(135deg, #0F172A 0%, #334155 100%); }
 
     .day-banner-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12.5px;
-      opacity: 0.9;
+      font-size: 12px;
+      opacity: 0.92;
       font-variant-numeric: tabular-nums;
+      flex-wrap: wrap;
+      gap: 6px;
     }
-
-    .day-banner-title {
-      font-size: 19px;
-      font-weight: 800;
-      margin: 4px 0 0;
+    .day-banner-title { font-size: 19px; font-weight: 900; margin: 5px 0 6px; line-height: 1.3; }
+    .day-meta-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; align-items: center; }
+    .day-meta-pill {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(4px);
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
     }
+    .copy-day-btn {
+      background: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .copy-day-btn:active { transform: scale(0.95); }
 
-    /* Note List inside Day */
-    .note-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
+    /* Visual Route Strip */
+    .route-strip {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 9px 12px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      white-space: nowrap;
     }
+    .route-strip::-webkit-scrollbar { display: none; }
+    .route-node {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 7px;
+      background: var(--surface-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .route-arrow { color: var(--primary-light); font-weight: 800; font-size: 12px; }
 
+    /* Filter Chips Bar */
+    .filter-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 12px;
+      padding-bottom: 2px;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      flex: 0 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-chip.active {
+      background: var(--primary-light);
+      color: #FFFFFF;
+      border-color: var(--primary-light);
+    }
+    [data-theme="dark"] .filter-chip.active { color: #070B14; }
+
+    /* Note List */
+    .note-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
     .note-item {
       display: flex;
       align-items: flex-start;
@@ -498,12 +584,7 @@
       font-size: 13.5px;
       word-break: break-word;
     }
-
-    .note-icon {
-      flex-shrink: 0;
-      font-size: 15px;
-      line-height: 1.4;
-    }
+    .note-icon { flex-shrink: 0; font-size: 15px; line-height: 1.4; }
 
     /* Collapsible Transit Summary */
     details.transit-summary {
@@ -514,7 +595,6 @@
       box-shadow: var(--shadow);
       overflow: hidden;
     }
-
     details.transit-summary summary {
       padding: 13px 14px;
       font-weight: 800;
@@ -526,32 +606,18 @@
       justify-content: space-between;
       user-select: none;
     }
-
-    details.transit-summary summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .summary-chevron {
-      font-size: 12px;
-      color: var(--text-muted);
-      transition: transform 0.2s ease;
-    }
-
-    details.transit-summary[open] .summary-chevron {
-      transform: rotate(180deg);
-    }
-
+    details.transit-summary summary::-webkit-details-marker { display: none; }
+    .summary-chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.2s ease; }
+    details.transit-summary[open] .summary-chevron { transform: rotate(180deg); }
     .transit-list {
-      padding: 0 14px 14px;
+      padding: 12px 14px 14px;
       margin: 0;
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 8px;
       border-top: 1px solid var(--border);
-      padding-top: 12px;
     }
-
     .transit-list-item {
       background: var(--surface-alt);
       border-radius: 9px;
@@ -559,146 +625,237 @@
       font-size: 13.5px;
       border-left: 3px solid var(--primary-light);
     }
-
-    .transit-route-label {
-      font-weight: 800;
-      color: var(--primary-light);
-      display: block;
-      margin-bottom: 3px;
-    }
-
-    .transit-sublist {
-      margin: 6px 0 0;
-      padding-left: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .transit-route-label { font-weight: 800; color: var(--primary-light); display: block; margin-bottom: 3px; }
+    .transit-sublist { margin: 6px 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px; }
 
     /* Timeline Scheduler */
-    .timeline {
-      position: relative;
-      padding-left: 16px;
-      margin-top: 6px;
-    }
-
+    .timeline { position: relative; padding-left: 18px; margin-top: 6px; }
     .timeline::before {
       content: "";
       position: absolute;
       left: 5px;
       top: 12px;
       bottom: 12px;
-      width: 2px;
+      width: 2.5px;
       background: var(--border);
     }
-
     .timeline-stop {
       position: relative;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 12px;
+      padding: 13px;
       margin-bottom: 10px;
       box-shadow: var(--shadow);
+      transition: opacity 0.2s, border-color 0.2s;
     }
-
     .timeline-stop::before {
       content: "";
       position: absolute;
-      left: -16px;
+      left: -18px;
       top: 18px;
-      width: 10px;
-      height: 10px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
       background: var(--primary-light);
       border: 2px solid var(--surface);
       box-shadow: 0 0 0 2px var(--primary-light);
     }
+    .timeline-stop.visited { opacity: 0.62; border-color: var(--success); }
+    .timeline-stop.visited::before { background: var(--success); box-shadow: 0 0 0 2px var(--success); }
+    .timeline-stop.hidden-by-filter { display: none; }
 
     .stop-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
     }
-
+    .stop-header-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .stop-time {
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 800;
       color: var(--primary-light);
       font-variant-numeric: tabular-nums;
       background: var(--primary-soft);
       padding: 2px 8px;
-      border-radius: 6px;
+      border-radius: 7px;
+    }
+    .visit-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .timeline-stop.visited .visit-toggle {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success);
     }
 
-    .stop-title {
-      font-size: 15.5px;
-      font-weight: 800;
-      margin: 4px 0;
-      color: var(--text);
-    }
-
+    .stop-title { font-size: 16px; font-weight: 800; margin: 4px 0; color: var(--text); }
     .stop-note {
       font-size: 13px;
       color: var(--text-secondary);
-      margin-top: 4px;
+      margin-top: 5px;
       background: var(--surface-alt);
-      padding: 7px 9px;
-      border-radius: 7px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
 
-    .stop-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
+    /* Pro Tips & Photo Secrets */
+    .pro-tip {
+      margin-top: 7px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12.8px;
+      line-height: 1.5;
+      background: var(--tip-bg);
+      border: 1px solid var(--tip-border);
+      color: var(--tip-text);
+    }
+    .photo-tip {
+      margin-top: 6px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      background: var(--photo-bg);
+      border: 1px solid var(--photo-border);
+      color: var(--photo-text);
     }
 
-    /* Inline Transit Connector between stops */
+    .stop-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+
+    /* Inline Transit Connector */
     .timeline-connector {
       position: relative;
-      margin: -2px 0 8px 4px;
-      padding: 8px 11px;
+      margin: -2px 0 9px 4px;
+      padding: 9px 11px;
       background: var(--surface-alt);
       border: 1px dashed var(--border);
       border-left: 3px solid var(--accent);
-      border-radius: 8px;
+      border-radius: 9px;
       font-size: 12.5px;
       color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .timeline-connector strong { color: var(--text); }
+
+    /* Prep & Tools Grid Styles */
+    .weather-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .weather-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .weather-city { font-size: 12px; font-weight: 800; color: var(--primary-light); }
+    .weather-temp { font-size: 15.5px; font-weight: 900; margin: 3px 0; font-variant-numeric: tabular-nums; }
+    .weather-desc { font-size: 11px; color: var(--text-secondary); }
+
+    .phrase-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .phrase-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.1s;
+    }
+    .phrase-card:active { transform: scale(0.98); }
+    .phrase-zh { font-weight: 800; font-size: 14px; }
+    .phrase-jp { font-size: 13.5px; color: var(--primary-light); font-weight: 700; margin-top: 2px; }
+    .phrase-romaji { font-size: 11.5px; color: var(--text-muted); }
+
+    /* Custom Pack & Expense Tracker */
+    .inline-input-row { display: flex; gap: 6px; margin-top: 10px; }
+    .inline-input-row input {
+      flex: 1; padding: 8px 11px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--surface-alt);
+      color: var(--text); font-size: 13.5px; font-weight: 600;
     }
 
-    .timeline-connector strong {
+    .expense-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .expense-form input, .expense-form select {
+      padding: 9px 10px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
       color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      width: 100%;
+    }
+    .expense-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--primary-soft);
+      padding: 10px 13px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .expense-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 11px;
+      background: var(--surface-alt);
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      font-size: 13.5px;
     }
 
-    /* Modal (Taxi Card & JPY Converter) */
+    /* Search Modal Result */
+    .search-result-item {
+      padding: 10px 12px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .search-result-item:active { transform: scale(0.98); }
+
+    /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(3px);
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(4px);
       z-index: 300;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
     }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
+    .modal-backdrop.open { display: flex; }
     .modal-card {
       background: var(--surface);
       color: var(--text);
       border-radius: 18px;
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       padding: 18px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-      max-height: 85vh;
+      box-shadow: var(--shadow-lg);
+      max-height: 88vh;
       overflow-y: auto;
     }
 
@@ -707,98 +864,110 @@
       color: #0F172A;
       border: 2px solid #0F172A;
       border-radius: 12px;
-      padding: 14px;
+      padding: 13px;
       margin-bottom: 10px;
       text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s;
     }
+    .taxi-jp-box:active { transform: scale(0.98); }
+    .taxi-jp-label { font-size: 12px; color: #475569; margin-bottom: 4px; font-weight: 700; }
+    .taxi-jp-name { font-size: 19px; font-weight: 900; line-height: 1.3; margin-bottom: 4px; }
+    .taxi-jp-addr { font-size: 14px; font-weight: 700; color: #1E3A5F; }
+    .taxi-hint { font-size: 11px; color: #0284C7; margin-top: 5px; font-weight: 700; }
 
-    .taxi-jp-label {
-      font-size: 12px;
-      color: #475569;
-      margin-bottom: 4px;
+    /* Fullscreen Big Display Card */
+    .fullscreen-card {
+      background: #0F172A;
+      color: #FFFFFF;
+      text-align: center;
+      padding: 28px 18px;
+      border-radius: 16px;
+      border: 3px solid #38BDF8;
     }
+    .fs-polite { font-size: 16px; color: #FDE047; font-weight: 800; margin-bottom: 14px; }
+    .fs-main { font-size: 27px; font-weight: 900; line-height: 1.35; margin-bottom: 10px; word-break: break-word; }
+    .fs-sub { font-size: 16.5px; color: #CBD5E1; font-weight: 700; }
 
-    .taxi-jp-name {
-      font-size: 22px;
-      font-weight: 900;
-      line-height: 1.3;
-      margin-bottom: 4px;
-    }
-
-    .taxi-jp-addr {
-      font-size: 15px;
-      font-weight: 700;
-      color: #1E3A5F;
-    }
-
-    .calc-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 12px 0;
-    }
-
-    .calc-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .calc-row label {
-      width: 70px;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
+    .calc-input-group { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+    .calc-row { display: flex; align-items: center; gap: 8px; }
+    .calc-row label { width: 76px; font-weight: 700; font-size: 13.5px; }
     .calc-row input {
-      flex: 1;
-      padding: 10px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--border);
-      background: var(--surface-alt);
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 700;
+      flex: 1; padding: 10px 12px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--surface-alt);
+      color: var(--text); font-size: 16px; font-weight: 700;
       font-variant-numeric: tabular-nums;
     }
 
-    /* Floating Back to Top */
-    .fab-top {
+    /* Floating Back to Top & Quick Action */
+    .fab-group {
       position: fixed;
       right: 14px;
       bottom: calc(18px + env(safe-area-inset-bottom, 0px));
       z-index: 90;
+      display: flex;
+      gap: 8px;
+    }
+    .fab-btn {
       background: var(--primary);
       color: #FFFFFF;
       border: none;
       border-radius: 999px;
       padding: 10px 14px;
       font-size: 13px;
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
       cursor: pointer;
     }
+    [data-theme="dark"] .fab-btn { color: #070B14; }
 
-    [data-theme="dark"] .fab-top {
-      color: #0B1120;
-    }
+    a.inline-link { color: var(--primary-light); word-break: break-all; font-weight: 700; }
 
-    a.inline-link {
-      color: var(--primary-light);
-      word-break: break-all;
-      font-weight: 600;
+    /* Subway Line Color Dots */
+    .line-dot {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-weight: 800; padding: 1px 6px; border-radius: 5px; font-size: 11.5px;
     }
+    .line-n { background: #DCFCE7; color: #166534; }
+    .line-t { background: #FFEDD5; color: #9A3412; }
+    .line-h { background: #E0F2FE; color: #075985; }
+    [data-theme="dark"] .line-n { background: rgba(34,197,94,0.2); color: #86EFAC; }
+    [data-theme="dark"] .line-t { background: rgba(249,115,22,0.2); color: #FDBA74; }
+    [data-theme="dark"] .line-h { background: rgba(56,189,248,0.2); color: #7DD3FC; }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
+  <canvas id="snowCanvas"></canvas>
 
   <!-- Top Header -->
   <header class="app-header">
     <div class="header-top">
       <span class="trip-badge">❄️ 行程名稱：北2</span>
       <div class="header-actions">
+        <button class="icon-btn" type="button" onclick="openSearchModal()" title="全域搜尋景點/餐廳">🔍 搜尋</button>
+        <button class="icon-btn" type="button" id="snowToggleBtn" onclick="toggleSnow()" title="雪花特效開關">❄️ 飄雪</button>
         <button class="icon-btn" type="button" onclick="openModal('taxiModal')" title="計程車日文指路卡">🚕 司機卡</button>
-        <button class="icon-btn" type="button" onclick="openModal('jpyModal')" title="日幣換算">💴 匯率</button>
+        <button class="icon-btn" type="button" onclick="openModal('jpyModal')" title="日幣與免稅換算">💴 匯率</button>
         <button class="icon-btn" type="button" id="themeToggleBtn" onclick="toggleTheme()" title="切換深淺色">🌙</button>
       </div>
     </div>
@@ -806,7 +975,20 @@
     <p class="trip-subtitle">
       <span>📅 2026/11/25 (三) – 11/30 (一)</span>
       <span>🏨 the b sapporo</span>
+      <span>✈️ 虎航 IT234 / IT235</span>
     </p>
+
+    <!-- Live Trip Dashboard -->
+    <div class="live-dashboard">
+      <div class="countdown-box">
+        <div id="countdownLabel">⏳ 距離桃園機場集合 (11/25 03:20)</div>
+        <div class="countdown-value" id="countdownTimer">計算中...</div>
+      </div>
+      <div class="clock-pair">
+        <div class="clock-jp" id="clockJP">🇯🇵 --:--:--</div>
+        <div class="clock-tw" id="clockTW">🇹🇼 --:--:--</div>
+      </div>
+    </div>
   </header>
 
   <!-- Sticky Navigation Tabs -->
@@ -840,6 +1022,14 @@
         <span class="tab-main">第6天</span>
         <span class="tab-sub">11/30 (一)</span>
       </button>
+      <button class="tab-btn" data-target="tab-prep" onclick="switchTab('tab-prep')">
+        <span class="tab-main">🧳 行前</span>
+        <span class="tab-sub">打包/穿搭</span>
+      </button>
+      <button class="tab-btn" data-target="tab-tools" onclick="switchTab('tab-tools')">
+        <span class="tab-main">🛠️ 百寶箱</span>
+        <span class="tab-sub">日語/記帳</span>
+      </button>
     </div>
   </nav>
 
@@ -848,6 +1038,34 @@
 
     <!-- ==================== TAB: BOOKING ==================== -->
     <section id="tab-booking" class="tab-panel active">
+
+      <!-- Quick Overview Summary Card -->
+      <div class="card" style="background: linear-gradient(135deg, var(--surface) 0%, var(--surface-card) 100%);">
+        <div class="card-header">
+          <h2 class="card-title">🗺️ 北2 六天五夜行程總覽</h2>
+          <span class="badge badge-primary">6 Days · 5 Nights</span>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; font-size:12.5px;">
+          <div style="background:var(--surface); padding:8px 10px; border-radius:9px; border:1px solid var(--border); cursor:pointer;" onclick="switchTab('tab-day1')">
+            <strong style="color:var(--primary-light);">D1｜11/25 (三)</strong><br/>Shopping Day・冬裝採買 & 聖誕市集
+          </div>
+          <div style="background:var(--surface); padding:8px 10px; border-radius:9px; border:1px solid var(--border); cursor:pointer;" onclick="switchTab('tab-day2')">
+            <strong style="color:var(--primary-light);">D2｜11/26 (四)</strong><br/>頭大佛・洞爺湖・登別地獄谷 & 燒肉
+          </div>
+          <div style="background:var(--surface); padding:8px 10px; border-radius:9px; border:1px solid var(--border); cursor:pointer;" onclick="switchTab('tab-day3')">
+            <strong style="color:var(--primary-light);">D3｜11/27 (五)</strong><br/>美瑛青池・森林精靈露台夜間點燈
+          </div>
+          <div style="background:var(--surface); padding:8px 10px; border-radius:9px; border:1px solid var(--border); cursor:pointer;" onclick="switchTab('tab-day4')">
+            <strong style="color:var(--primary-light);">D4｜11/28 (六)</strong><br/>小樽三角市場・堺町通・天狗山夜景
+          </div>
+          <div style="background:var(--surface); padding:8px 10px; border-radius:9px; border:1px solid var(--border); cursor:pointer;" onclick="switchTab('tab-day5')">
+            <strong style="color:var(--primary-light);">D5｜11/29 (日)</strong><br/>諏訪神社・北海道神宮・東急・螃蟹
+          </div>
+          <div style="background:var(--surface); padding:8px 10px; border-radius:9px; border:1px solid var(--border); cursor:pointer;" onclick="switchTab('tab-day6')">
+            <strong style="color:var(--primary-light);">D6｜11/30 (一)</strong><br/>新千歲機場伴手禮・拉麵道場・返台
+          </div>
+        </div>
+      </div>
 
       <!-- Flights -->
       <div class="card">
@@ -864,9 +1082,9 @@
             <div class="flight-route">
               <div>
                 <div class="flight-time">06:20</div>
-                <div class="flight-airport">TPE 桃園機場</div>
+                <div class="flight-airport">TPE 桃園機場 (03:20 集合)</div>
               </div>
-              <div class="flight-arrow">━━ ✈️ ━━▶</div>
+              <div class="flight-arrow">━━ ✈️ 3h35m ━━▶</div>
               <div style="text-align:right;">
                 <div class="flight-time">10:55</div>
                 <div class="flight-airport">CTS 新千歲機場</div>
@@ -884,14 +1102,15 @@
                 <div class="flight-time">11:55</div>
                 <div class="flight-airport">CTS 新千歲機場</div>
               </div>
-              <div class="flight-arrow">━━ ✈️ ━━▶</div>
+              <div class="flight-arrow">━━ ✈️ 4h40m ━━▶</div>
               <div style="text-align:right;">
                 <div class="flight-time">15:35</div>
                 <div class="flight-airport">TPE 桃園機場</div>
               </div>
             </div>
             <div class="alert-box" style="margin-top:8px;">
-              ⚠️ <strong>回程報到提醒：</strong>虎航 IT235 <strong>11:55 起飛、11:10 關櫃</strong>，建議最晚 <strong>10:00</strong> 走室內聯絡通道前往國際線 3F 報到。
+              ⚠️ <strong>回程報到提醒：</strong>虎航 IT235 <strong>11:55 起飛、11:10 關櫃</strong>，建議最晚 <strong>10:00</strong> 走室內聯絡通道前往國際線 3F 報到。<br/>
+              🔋 <strong>飛安注意：</strong>Day 5 購買的<strong>鋰電池電動刮鬍刀</strong>、行動電源、相機電池，返台務必放置於「<strong>隨身手提行李</strong>」登機！
             </div>
           </div>
         </div>
@@ -900,26 +1119,32 @@
       <!-- Hotel -->
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">🏨 飯店住宿</h2>
+          <h2 class="card-title">🏨 飯店住宿 (連泊 5 晚)</h2>
           <span class="badge badge-success">Rakuten travel</span>
         </div>
         <div style="font-size:17px;font-weight:800;margin-bottom:4px;">The b sapporo (ザ・ビー 札幌)</div>
         <div style="font-size:13.5px;color:var(--text-secondary);">
-          📍 札幌市中央區南3条西2丁目17-17（地鐵南北線「すすきの駅」1 號出口步行 3 分鐘／下雨下雪可走地下街 Pole Town）
+          📍 札幌市中央區南3条西2丁目17-17（<span class="line-dot line-n">🟢 地鐵南北線</span>「すすきの駅」1 號出口步行 3 分鐘／下雨下雪可走地下街 Pole Town）
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
-          <div style="background:var(--surface-alt);padding:9px 11px;border-radius:8px;">
+          <div style="background:var(--surface-alt);padding:9px 11px;border-radius:8px;border:1px solid var(--border);">
             <div style="font-size:12px;color:var(--text-muted);">入住 (Check-in)</div>
             <div style="font-weight:800;font-size:14.5px;">11/25 15:00</div>
+            <div style="font-size:11px;color:var(--success);">13:00 可先寄放行李</div>
           </div>
-          <div style="background:var(--surface-alt);padding:9px 11px;border-radius:8px;">
+          <div style="background:var(--surface-alt);padding:9px 11px;border-radius:8px;border:1px solid var(--border);">
             <div style="font-size:12px;color:var(--text-muted);">退房 (Check-out)</div>
             <div style="font-weight:800;font-size:14.5px;">11/30 11:00</div>
+            <div style="font-size:11px;color:var(--accent);">預計 07:30 退房搭巴士</div>
           </div>
+        </div>
+        <div class="pro-tip">
+          💡 <strong>飯店周邊優勢：</strong>步行 1 分鐘到 24H Seicomart (THE KNOT 1F)、步行 2 分鐘到湯咖哩 TREASURE、步行 2 分鐘到狸小路商店街與札幌かに家，過馬路 3 分鐘即達機場巴士站！
         </div>
         <div class="btn-row">
           <a class="btn btn-primary" href="https://www.google.com/maps/search/?api=1&query=the+b+sapporo" target="_blank" rel="noopener">📍 Google Maps 導航</a>
-          <button class="btn btn-outline" type="button" onclick="openModal('taxiModal')">🚕 顯示日文地址給司機</button>
+          <button class="btn btn-outline" type="button" onclick="openFullscreenCard('ザ・ビー 札幌 (すすきの)', '札幌市中央区南3条西2丁目17-17', '🏨 飯店指路卡')">🚕 放大給司機看</button>
+          <button class="btn btn-outline" type="button" onclick="copyText('札幌市中央区南3条西2丁目17-17', '已複製飯店日文地址')">📋 複製地址</button>
         </div>
       </div>
 
@@ -933,16 +1158,18 @@
           此團冬季常見 08:30 飯店接送、17:30-18:00 返回札幌，與原表 10:40-18:40 可能不同。
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="background:var(--surface-alt);padding:11px;border-radius:10px;">
+          <div style="background:var(--surface-alt);padding:12px;border-radius:10px;border:1px solid var(--border);">
             <div style="font-weight:800;font-size:14px;">Day 2 (11/26 四)｜登別地獄谷＆洞爺湖一日遊</div>
-            <div class="btn-row" style="margin-top:6px;">
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:3px;">頭大佛殿 ➔ SAIRO展望台 ➔ Lake Hill Farm ➔ 洞爺湖 ➔ 熊牧場 ➔ 登別地獄谷</div>
+            <div class="btn-row" style="margin-top:7px;">
               <a class="btn btn-primary btn-sm" href="https://www.klook.com/zh-TW/activity/225425-sapporo-noboribetsu-hell-valley-lake-toya-full-day-small-group-tour/?spm=City.Activity_LIST&clickId=23efdfb91f" target="_blank" rel="noopener">🔗 開啟 Klook 活動頁</a>
               <button class="btn btn-outline btn-sm" type="button" onclick="switchTab('tab-day2')">查看 Day 2 行程</button>
             </div>
           </div>
-          <div style="background:var(--surface-alt);padding:11px;border-radius:10px;">
+          <div style="background:var(--surface-alt);padding:12px;border-radius:10px;border:1px solid var(--border);">
             <div style="font-weight:800;font-size:14px;">Day 3 (11/27 五)｜白金青池＆森林精靈露台夜間點燈一日遊</div>
-            <div class="btn-row" style="margin-top:6px;">
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:3px;">四季彩之丘 ➔ 美瑛聖誕樹 ➔ 白鬚瀑布 ➔ 白金青池點燈 ➔ 森林精靈露台</div>
+            <div class="btn-row" style="margin-top:7px;">
               <a class="btn btn-primary btn-sm" href="https://www.klook.com/zh-TW/activity/171966-shirogane-blue-pond-forest-elf-terrace-night-illumination-experience/" target="_blank" rel="noopener">🔗 開啟 Klook 活動頁</a>
               <button class="btn btn-outline btn-sm" type="button" onclick="switchTab('tab-day3')">查看 Day 3 行程</button>
             </div>
@@ -950,12 +1177,43 @@
         </div>
       </div>
 
+      <!-- Fixed Transit & Ticket Budget Table -->
+      <details class="transit-summary">
+        <summary>
+          <span>💳 行程已知交通與纜車預算概算 (建議 IC 卡儲值參考)</span>
+          <span class="summary-chevron">▼</span>
+        </summary>
+        <div style="padding: 10px 14px 14px; border-top: 1px solid var(--border);">
+          <table class="budget-table">
+            <thead><tr><th>天數</th><th>已知交通／門票項目</th><th style="text-align:right;">日幣 (單人)</th></tr></thead>
+            <tbody>
+              <tr><td>D1</td><td>JR 快速 Airport (新千歲→札幌)</td><td class="amt">¥1,150</td></tr>
+              <tr><td>D1</td><td>地鐵 (札幌→薄野¥210 + 大通→南郷18¥290 + 月寒→豊水¥250)</td><td class="amt">¥750</td></tr>
+              <tr><td>D1</td><td>計程車備選 (WORKMAN→Sports Depo→飯店)</td><td class="amt">~¥3,400–4,100</td></tr>
+              <tr><td>D2</td><td>地鐵 (札幌→薄野回燒肉店)</td><td class="amt">¥210</td></tr>
+              <tr><td>D4</td><td>地鐵往返 ¥420 + JR 札幌↔小樽 ¥1,500 + 南小樽 ¥200</td><td class="amt">¥2,120</td></tr>
+              <tr><td>D4</td><td>小樽天狗山 9號巴士往返 ¥480 + 纜車往返 ¥2,000</td><td class="amt">¥2,480</td></tr>
+              <tr><td>D5</td><td>札幌地鐵假日專用一日券 (ドニチカキップ)</td><td class="amt">¥520</td></tr>
+              <tr><td>D6</td><td>新千歲機場連絡巴士 (薄野→機場)</td><td class="amt">¥1,500</td></tr>
+              <tr class="budget-total-row">
+                <td colspan="2">交通與纜車基本合計 (不含選搭計程車)</td>
+                <td class="amt">¥8,730</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:8px;">
+            💡 <strong>IC 卡建議：</strong>上述約 ¥6,210 可直接刷 Suica/Kitaca/ICOCA（其餘為天狗山纜車 ¥2,000 及假日券 ¥520 建議現金或購票機付款）。
+          </div>
+        </div>
+      </details>
+
       <!-- Checklist: Restaurants -->
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">🍽️ 需預訂餐廳</h2>
           <span class="badge badge-accent" id="restProgress">0 / 3 完成</span>
         </div>
+        <div class="progress-wrap"><div class="progress-fill" id="restBar" style="width:0%"></div></div>
         <ul class="checklist">
           <li class="check-item" onclick="toggleCheck('chk-rest-1', event)">
             <input type="checkbox" id="chk-rest-1" />
@@ -1000,6 +1258,7 @@
           <h2 class="card-title">🎟️ 行前確認／購票</h2>
           <span class="badge badge-primary" id="ticketProgress">0 / 2 完成</span>
         </div>
+        <div class="progress-wrap"><div class="progress-fill" id="ticketBar" style="width:0%"></div></div>
         <ul class="checklist">
           <li class="check-item" onclick="toggleCheck('chk-tkt-1', event)">
             <input type="checkbox" id="chk-tkt-1" />
@@ -1023,12 +1282,29 @@
 
     <!-- ==================== TAB: DAY 1 ==================== -->
     <section id="tab-day1" class="tab-panel">
-      <div class="day-banner">
+      <div class="day-banner day-banner-d1">
         <div class="day-banner-top">
           <span>第1天｜2026/11/25 (三)</span>
           <span>✈️ 抵達新千歲 10:55</span>
         </div>
         <h2 class="day-banner-title">Shopping day・冬裝採買與薄野大通散策</h2>
+        <div class="day-meta-pills">
+          <span class="day-meta-pill">🌡️ 札幌預估 0°C ~ 5°C</span>
+          <span class="day-meta-pill">🌅 日落 ~16:04</span>
+          <button class="copy-day-btn" type="button" onclick="copyDayText('day1', 'Day 1 (11/25 三) Shopping Day')">📋 複製本日行程</button>
+        </div>
+      </div>
+
+      <!-- Visual Route Strip -->
+      <div class="route-strip">
+        <span class="route-node">✈️ 機場</span><span class="route-arrow">➔</span>
+        <span class="route-node">🏨 飯店寄放</span><span class="route-arrow">➔</span>
+        <span class="route-node">🍛 湯咖哩</span><span class="route-arrow">➔</span>
+        <span class="route-node">🧦 WORKMAN</span><span class="route-arrow">➔</span>
+        <span class="route-node">🥾 Sports Depo</span><span class="route-arrow">➔</span>
+        <span class="route-node">🐹 PARCO</span><span class="route-arrow">➔</span>
+        <span class="route-node">🍜 すみれ</span><span class="route-arrow">➔</span>
+        <span class="route-node">🎄 聖誕市集</span>
       </div>
 
       <!-- Day 1 Note -->
@@ -1060,7 +1336,7 @@
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">札幌站 → 飯店</span>
-            轉地鐵南北線「さっぽろ駅」→「すすきの駅」(2 站約 3 分，¥210)，1 號出口步行 3 分鐘到 the b sapporo (下雨/雪可走地下街 Pole Town)。
+            轉<span class="line-dot line-n">🟢 地鐵南北線</span>「さっぽろ駅」→「すすきの駅」(2 站約 3 分，¥210)，1 號出口步行 3 分鐘到 the b sapporo (下雨/雪可走地下街 Pole Town)。
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">飯店 → TREASURE</span>
@@ -1068,7 +1344,7 @@
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">TREASURE → WORKMAN Plus 札幌北野東北通店</span>
-            從 TREASURE (南2条西1丁目) 步行約 4-5 分鐘至地鐵東西線「大通駅」→ 搭乘東西線往新札幌方向直達「南郷18丁目駅」(6 站約 11 分，¥290) → 出站 2 號或 3 號出口往南沿東北通步行約 12-14 分鐘 (約 1 公里，空手散步輕鬆抵達，全程約 28-30 分)。
+            從 TREASURE (南2条西1丁目) 步行約 4-5 分鐘至<span class="line-dot line-t">🟠 地鐵東西線</span>「大通駅」→ 搭乘東西線往新札幌方向直達「南郷18丁目駅」(6 站約 11 分，¥290) → 出站 2 號或 3 號出口往南沿東北通步行約 12-14 分鐘 (約 1 公里，空手散步輕鬆抵達，全程約 28-30 分)。
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">WORKMAN Plus → Sports Depo 月寒店</span>
@@ -1080,7 +1356,7 @@
           <li class="transit-list-item">
             <span class="transit-route-label">Sports Depo 月寒店 → 飯店</span>
             <ul class="transit-sublist">
-              <li><strong>方案1 (地鐵直達)：</strong>步行約 8-10 分鐘至地鐵東豐線「月寒中央駅」1 號出口 → 搭乘東豐線往榮町方向直達「豊水すすきの駅」(4 站約 7 分，¥250) → 出站 1 號或 3 號出口步行約 3-4 分鐘直達 the b sapporo 大門放戰利品 (全程約 20-25 分)。</li>
+              <li><strong>方案1 (地鐵直達)：</strong>步行約 8-10 分鐘至<span class="line-dot line-h">🔵 地鐵東豐線</span>「月寒中央駅」1 號出口 → 搭乘東豐線往榮町方向直達「豊水すすきの駅」(4 站約 7 分，¥250) → 出站 1 號或 3 號出口步行約 3-4 分鐘直達 the b sapporo 大門放戰利品 (全程約 20-25 分)。</li>
               <li><strong>方案2 (計程車)：</strong>若買了雪靴大鞋盒與大衣較重，直接從 Sports Depo 叫計程車直達 the b sapporo (車程約 12-15 分，約 5.5 公里，車資約 ¥2,000-¥2,300)。</li>
             </ul>
           </li>
@@ -1095,50 +1371,61 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">⏱️ 時間軸行程 (Scheduler)</h3>
-          <span class="badge badge-primary">12 個行程點</span>
+          <span class="badge badge-primary" id="progress-day1">0 / 12 已完成</span>
         </div>
-        <div class="timeline">
-          <div class="timeline-stop">
+        <div class="filter-bar" data-day="day1">
+          <button class="filter-chip active" onclick="filterTimeline('day1','all',this)">全部</button>
+          <button class="filter-chip" onclick="filterTimeline('day1','food',this)">🍽️ 美食</button>
+          <button class="filter-chip" onclick="filterTimeline('day1','shop',this)">🛍️ 採買</button>
+          <button class="filter-chip" onclick="filterTimeline('day1','spot',this)">🎄 景點</button>
+          <button class="filter-chip" onclick="filterTimeline('day1','transit',this)">✈️ 交通/飯店</button>
+        </div>
+
+        <div class="timeline" id="timeline-day1">
+          <div class="timeline-stop" data-cat="transit" id="stop-d1-1">
             <div class="stop-header">
-              <span class="stop-time">03:20</span>
-              <span class="badge badge-primary">✈️ 出發</span>
+              <div class="stop-header-left"><span class="stop-time">03:20</span><span class="badge badge-primary">✈️ 出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-1','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">TPE·臺灣桃園國際機場</div>
             <div class="stop-note">搭乘虎航 IT234 (06:20 起飛 → 10:55 抵達新千歲)</div>
+            <div class="pro-tip">💡 <strong>登機攻略：</strong>隨身帶一件輕便好穿脫防風外套或微厚襯衫，下新千歲時雖然室內有暖氣，但走往戶外或迎風面已有寒意。</div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d1-2">
             <div class="stop-header">
-              <span class="stop-time">10:55</span>
-              <span class="badge badge-primary">✈️ 抵達</span>
+              <div class="stop-header-left"><span class="stop-time">10:55</span><span class="badge badge-primary">✈️ 抵達</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-2','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">CTS·新千歲機場</div>
+            <div class="pro-tip">💡 <strong>入境加速：</strong>提前截圖存好 Visit Japan Web 的入境審查與海關 QR Code，領完行李過海關就能快速通關直奔國內線 B1 JR 站！</div>
           </div>
 
           <div class="timeline-connector">
             🚇 <strong>機場 → 札幌站：</strong>國際線領行李後依指標步行約 10 分鐘至國內線 B1「JR新千歲機場站」，搭「JR快速 Airport 號」至札幌站 (約 37-40 分，¥1,150，可刷 IC 卡)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d1-3">
             <div class="stop-header">
-              <span class="stop-time">12:35</span>
-              <span class="badge badge-primary">🚉 車站</span>
+              <div class="stop-header-left"><span class="stop-time">12:35</span><span class="badge badge-primary">🚉 車站</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-3','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">ＪＲ札幌駅</div>
           </div>
 
           <div class="timeline-connector">
-            🚇 <strong>札幌站 → 飯店：</strong>轉地鐵南北線「さっぽろ駅」→「すすきの駅」(2 站約 3 分，¥210)，1 號出口步行 3 分鐘到 the b sapporo (下雨/雪可走地下街 Pole Town)。
+            🚇 <strong>札幌站 → 飯店：</strong>轉<span class="line-dot line-n">🟢 地鐵南北線</span>「さっぽろ駅」→「すすきの駅」(2 站約 3 分，¥210)，1 號出口步行 3 分鐘到 the b sapporo (下雨/雪可走地下街 Pole Town)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d1-4">
             <div class="stop-header">
-              <span class="stop-time">13:00</span>
-              <span class="badge badge-success">🏨 飯店寄行李</span>
+              <div class="stop-header-left"><span class="stop-time">13:00</span><span class="badge badge-success">🏨 飯店寄行李</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-4','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=the+b+sapporo" target="_blank" rel="noopener">📍 地圖</a>
+              <button class="btn btn-outline btn-sm" type="button" onclick="openFullscreenCard('ザ・ビー 札幌 (すすきの)', '札幌市中央区南3条西2丁目17-17', '🏨 飯店指路')">🚕 給司機看</button>
             </div>
           </div>
 
@@ -1146,32 +1433,34 @@
             🚶 <strong>飯店 → TREASURE：</strong>飯店往東北步行約 2 分鐘 (南2条西1丁目)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d1-5">
             <div class="stop-header">
-              <span class="stop-time">13:10</span>
-              <span class="badge badge-accent">🍛 午餐</span>
+              <div class="stop-header-left"><span class="stop-time">13:10</span><span class="badge badge-accent">🍛 午餐</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-5','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">Soup Curry TREASURE</div>
             <div class="stop-note">GARAKU姊妹店，飯店步行2分鐘</div>
+            <div class="pro-tip">🍽️ <strong>必點攻略：</strong>招牌是「燉煮酥脆雞腿 (さくっと揚げチキンレッグ)」或「炙燒豬肉角煮」！和風柴魚高湯底鮮甜濃厚，推薦辣度 2~3（微辣開胃）、飯量配炙燒起司超讚。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=Soup+Curry+TREASURE+Sapporo" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
           <div class="timeline-connector">
-            🚇 <strong>TREASURE → WORKMAN Plus 札幌北野東北通店：</strong>步行 4-5 分至地鐵東西線「大通駅」→ 搭往新札幌方向直達「南郷18丁目駅」(6 站約 11 分，¥290) → 2 號或 3 號出口往南沿東北通步行約 12-14 分鐘 (約 1 公里，空手散步輕鬆抵達，全程約 28-30 分)。
+            🚇 <strong>TREASURE → WORKMAN Plus 札幌北野東北通店：</strong>步行 4-5 分至<span class="line-dot line-t">🟠 地鐵東西線</span>「大通駅」→ 搭往新札幌方向直達「南郷18丁目駅」(6 站約 11 分，¥290) → 2 號或 3 號出口往南沿東北通步行約 12-14 分鐘 (約 1 公里，空手散步輕鬆抵達，全程約 28-30 分)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="shop" id="stop-d1-6">
             <div class="stop-header">
-              <span class="stop-time">14:40</span>
-              <span class="badge badge-primary">🧦 採買裝備</span>
+              <div class="stop-header-left"><span class="stop-time">14:40</span><span class="badge badge-primary">🧦 採買裝備</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-6','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">WORKMAN Plus 札幌北野東北通店</div>
             <div class="stop-note">營業至 20:00｜採買清單：中層, 內層, 襪子（先買好厚雪襪與中層，下一站試穿雪靴與大衣最精準！）</div>
+            <div class="pro-tip">🛒 <strong>神級 CP 值推薦：</strong>日本戶外國民神店！推薦看「FieldCore / Find-Out」系列的<strong>Merino 羊毛厚雪襪</strong>、<strong>裏起毛防風保暖長褲</strong>、<strong>輕量刷毛/防風中層夾克</strong>（約 ¥980～¥2,900，保暖度超驚人！）。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=WORKMAN+Plus+札幌北野東北通店" target="_blank" rel="noopener">📍 地圖</a>
-              <button class="btn btn-warn btn-sm" type="button" onclick="openModal('taxiModal')">🚕 給司機看地址</button>
+              <button class="btn btn-warn btn-sm" type="button" onclick="openFullscreenCard('ワークマン プラス 札幌北野東北通店', '札幌市清田区北野7条2丁目9-13 (東北通沿い)', '🧦 WORKMAN')">🚕 給司機看地址</button>
             </div>
           </div>
 
@@ -1181,44 +1470,47 @@
             • <strong>方案2 (公車)：</strong>搭北海道中央巴士【月62 北野線】往月寒中央方向直達。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="shop" id="stop-d1-7">
             <div class="stop-header">
-              <span class="stop-time">16:00</span>
-              <span class="badge badge-primary">🛍️ 採買裝備</span>
+              <div class="stop-header-left"><span class="stop-time">16:00</span><span class="badge badge-primary">🛍️ 採買裝備</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-7','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">Sports Depo 旗艦店札幌月寒店 1F・Alpen Outdoors 札幌月寒店 2F</div>
             <div class="stop-note">採買清單：外套, 走路鞋, 雪靴（直接套上剛買的厚雪襪試穿雪靴，版型最精準）</div>
+            <div class="pro-tip">🥾 <strong>選雪靴實戰密技：</strong>1F 齊聚 SOREL、Columbia、The North Face、Salomon 專業雪靴！鞋底建議挑「深齒紋防滑冰爪紋 (Omni-Grip / Vibram Arctic Grip)」，<strong>穿厚雪襪試穿時腳尖預留約 1 公分空氣層</strong>才更保暖！2F Alpen Outdoors 有眾多露營品牌羽絨外套，結帳記得詢問能否免稅！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=スポーツデポ+フラッグシップストア+札幌月寒店" target="_blank" rel="noopener">📍 地圖</a>
-              <button class="btn btn-warn btn-sm" type="button" onclick="openModal('taxiModal')">🚕 給司機看地址</button>
+              <button class="btn btn-warn btn-sm" type="button" onclick="openFullscreenCard('スポーツデポ フラッグシップストア 札幌月寒店', '札幌市豊平区月寒中央通2丁目1-1 (国道36号線沿い)', '🥾 Sports Depo')">🚕 給司機看地址</button>
             </div>
           </div>
 
           <div class="timeline-connector">
             🚇 <strong>Sports Depo → 飯店：</strong><br/>
-            • <strong>方案1 (地鐵直達)：</strong>步行約 8-10 分鐘至地鐵東豐線「月寒中央駅」→ 搭東豐線直達「豊水すすきの駅」(4 站約 7 分，¥250) → 出站走 3-4 分鐘直達飯店門口放戰利品 (全程約 20-25 分)。<br/>
+            • <strong>方案1 (地鐵直達)：</strong>步行約 8-10 分鐘至<span class="line-dot line-h">🔵 地鐵東豐線</span>「月寒中央駅」→ 搭東豐線直達「豊水すすきの駅」(4 站約 7 分，¥250) → 出站走 3-4 分鐘直達飯店門口放戰利品 (全程約 20-25 分)。<br/>
             • <strong>方案2 (計程車)：</strong>若買了雪靴鞋盒與厚外套大包小包，直接叫計程車回飯店約 12-15 分鐘 (約 5.5 公里，車資約 ¥2,000-¥2,300)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d1-8">
             <div class="stop-header">
-              <span class="stop-time">17:50</span>
-              <span class="badge badge-success">🏨 回飯店放戰利品</span>
+              <div class="stop-header-left"><span class="stop-time">17:50</span><span class="badge badge-success">🏨 回飯店放戰利品</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-8','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
+            <div class="pro-tip">🏨 辦理 Check-in 拿房卡進房，換穿新買的防寒外套與雪靴輕裝再出發！</div>
           </div>
 
           <div class="timeline-connector">
             🚶 <strong>飯店 → PARCO：</strong>步行約 5 分鐘 (薄野〜大通步行生活圈)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="shop" id="stop-d1-9">
             <div class="stop-header">
-              <span class="stop-time">18:25</span>
-              <span class="badge badge-primary">🛍️ 逛街</span>
+              <div class="stop-header-left"><span class="stop-time">18:25</span><span class="badge badge-primary">🛍️ 逛街</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-9','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">PARCO札幌</div>
             <div class="stop-note">B2F Chiikawa Land 營業至 20:00 (行前 3-5 天確認官方 X 是否需抽整理券)</div>
+            <div class="pro-tip">🐹 <strong>宅趣指南：</strong>B2F 除了 Chiikawa Land，還有 Jump Shop、三麗鷗、無印良品、Loft 等好逛商店；北海道限定吉伊卡哇吊飾很搶手！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=札幌PARCO" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1228,13 +1520,14 @@
             🚶 <strong>PARCO → すみれ：</strong>步行約 3 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d1-10">
             <div class="stop-header">
-              <span class="stop-time">19:15</span>
-              <span class="badge badge-accent">🍜 晚餐</span>
+              <div class="stop-header-left"><span class="stop-time">19:15</span><span class="badge badge-accent">🍜 晚餐</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-10','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">すみれ 札幌すすきの店</div>
             <div class="stop-note">備選：らーめん空 本店 / 札幌拉麵橫丁</div>
+            <div class="pro-tip">🔥 <strong>拉麵提醒：</strong>「すみれ」招牌濃厚味噌拉麵表面浮著一層滾燙的豬油保溫層，<strong>看似沒冒煙其實超級燙口</strong>，千萬先吹涼再喝湯！配粗捲黃麵與半熟蛋超對味！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=すみれ+札幌すすきの店" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1244,13 +1537,14 @@
             🚶 <strong>すみれ → 大通公園：</strong>步行約 6 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d1-11">
             <div class="stop-header">
-              <span class="stop-time">20:15</span>
-              <span class="badge badge-primary">🎄 夜景市集</span>
+              <div class="stop-header-left"><span class="stop-time">20:15</span><span class="badge badge-primary">🎄 夜景市集</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-11','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">大通公園</div>
             <div class="stop-note">慕尼黑聖誕市集營業至 21:00、白色燈樹節點燈至 22:00</div>
+            <div class="photo-tip">📸 <strong>拍照＆逛市集攻略：</strong>2 丁目聖誕市集建議喝熱紅酒 (Glühwein，買每年限定款馬克杯) 與現烤德國香腸暖身；1 丁目「札幌電視塔」與大通燈樹節光海同框超美！(市集 21:00 結束，點燈至 22:00)</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=大通公園+札幌" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1260,12 +1554,13 @@
             🚶 <strong>大通公園 → 飯店：</strong>步行約 7-8 分鐘 (可走地下街避寒)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d1-12">
             <div class="stop-header">
-              <span class="stop-time">21:00</span>
-              <span class="badge badge-success">🏨 休息</span>
+              <div class="stop-header-left"><span class="stop-time">21:00</span><span class="badge badge-success">🏨 休息</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d1-12','day1')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
+            <div class="pro-tip">💤 記得確認明天 Day 2 Klook 登別洞爺湖團最終憑證集合/飯店接送時間！</div>
           </div>
         </div>
       </div>
@@ -1273,12 +1568,29 @@
 
     <!-- ==================== TAB: DAY 2 ==================== -->
     <section id="tab-day2" class="tab-panel">
-      <div class="day-banner">
+      <div class="day-banner day-banner-d2">
         <div class="day-banner-top">
           <span>第2天｜2026/11/26 (四)</span>
           <span>🚌 Klook 一日遊</span>
         </div>
         <h2 class="day-banner-title">頭大佛殿・洞爺湖・昭和新山・登別地獄谷</h2>
+        <div class="day-meta-pills">
+          <span class="day-meta-pill">🌡️ 洞爺/登別 -1°C ~ 4°C</span>
+          <span class="day-meta-pill">🚌 專車接送免轉車</span>
+          <button class="copy-day-btn" type="button" onclick="copyDayText('day2', 'Day 2 (11/26 四) 登別洞爺湖一日遊')">📋 複製本日行程</button>
+        </div>
+      </div>
+
+      <!-- Visual Route Strip -->
+      <div class="route-strip">
+        <span class="route-node">🥖 coron麵包</span><span class="route-arrow">➔</span>
+        <span class="route-node">🚩 札幌站集合</span><span class="route-arrow">➔</span>
+        <span class="route-node">⛩️ 頭大佛殿</span><span class="route-arrow">➔</span>
+        <span class="route-node">🏔️ SAIRO展望台</span><span class="route-arrow">➔</span>
+        <span class="route-node">🍦 牧場冰</span><span class="route-arrow">➔</span>
+        <span class="route-node">🐻 熊牧場</span><span class="route-arrow">➔</span>
+        <span class="route-node">🌋 地獄谷</span><span class="route-arrow">➔</span>
+        <span class="route-node">🥩 燒肉Kiraku</span>
       </div>
 
       <!-- Day 2 Note -->
@@ -1303,7 +1615,7 @@
         <ul class="transit-list">
           <li class="transit-list-item">
             <span class="transit-route-label">飯店 → boulangerie coron 本店</span>
-            飯店出發步行約 15 分鐘 (沿南3条往東再北上至北2条東3丁目)；或搭地鐵東西線至「バスセンター前駅」步行 4 分鐘。
+            飯店出發步行約 15 分鐘 (沿南3条往東再北上至北2条東3丁目)；或搭<span class="line-dot line-t">🟠 地鐵東西線</span>至「バスセンター前駅」步行 4 分鐘。
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">coron 本店 → 札幌站北口</span>
@@ -1315,7 +1627,7 @@
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">札幌站/市區下車點 → Yakiniku Kiraku Susukino</span>
-            若於札幌站下車，搭地鐵南北線「さっぽろ駅」→「すすきの駅」(約 3 分，¥210) 南下步行 5 分鐘 (位於南6条西5丁目；亦可從札幌市電「東本願寺前駅」步行 4 分)。
+            若於札幌站下車，搭<span class="line-dot line-n">🟢 地鐵南北線</span>「さっぽろ駅」→「すすきの駅」(約 3 分，¥210) 南下步行 5 分鐘 (位於南6条西5丁目；亦可從札幌市電「東本願寺前駅」步行 4 分)。
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">Kiraku → 飯店</span>
@@ -1328,28 +1640,36 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">⏱️ 時間軸行程 (Scheduler)</h3>
-          <span class="badge badge-primary">13 個行程點</span>
+          <span class="badge badge-primary" id="progress-day2">0 / 13 已完成</span>
         </div>
-        <div class="timeline">
-          <div class="timeline-stop">
+        <div class="filter-bar" data-day="day2">
+          <button class="filter-chip active" onclick="filterTimeline('day2','all',this)">全部</button>
+          <button class="filter-chip" onclick="filterTimeline('day2','food',this)">🍽️ 美食</button>
+          <button class="filter-chip" onclick="filterTimeline('day2','spot',this)">⛰️ 景點</button>
+          <button class="filter-chip" onclick="filterTimeline('day2','transit',this)">🚌 集合/飯店</button>
+        </div>
+
+        <div class="timeline" id="timeline-day2">
+          <div class="timeline-stop" data-cat="transit" id="stop-d2-1">
             <div class="stop-header">
-              <span class="stop-time">08:50</span>
-              <span class="badge badge-success">🏨 出發</span>
+              <div class="stop-header-left"><span class="stop-time">08:50</span><span class="badge badge-success">🏨 出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-1','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
           </div>
 
           <div class="timeline-connector">
-            🚶 <strong>飯店 → boulangerie coron 本店：</strong>步行約 15 分鐘 (沿南3条往東再北上至北2条東3丁目)；或搭地鐵東西線至「バスセンター前駅」步行 4 分鐘。
+            🚶 <strong>飯店 → boulangerie coron 本店：</strong>步行約 15 分鐘 (沿南3条往東再北上至北2条東3丁目)；或搭<span class="line-dot line-t">🟠 地鐵東西線</span>至「バスセンター前駅」步行 4 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d2-2">
             <div class="stop-header">
-              <span class="stop-time">09:05</span>
-              <span class="badge badge-accent">🥖 早餐外帶</span>
+              <div class="stop-header-left"><span class="stop-time">09:05</span><span class="badge badge-accent">🥖 早餐外帶</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-2','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">boulangerie coron 本店</div>
             <div class="stop-note">外帶麵包無內用座，可於札幌站喝咖啡等集合</div>
+            <div class="pro-tip">🥐 <strong>推薦必買：</strong>100% 北海道產小麥人氣麵包店！招牌「<strong>道產玉米麵包 (道産とうきびパン)</strong>」吃得到飽滿甜玉米粒，培根法棍與奶油紅豆麵包也超讚！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=boulangerie+coron+本店" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1359,44 +1679,47 @@
             🚶 <strong>coron 本店 → 札幌站北口：</strong>步行約 15 分鐘直達札幌站北口集合處。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d2-3">
             <div class="stop-header">
-              <span class="stop-time">10:40</span>
-              <span class="badge badge-warn">🚩 集合出發</span>
+              <div class="stop-header-left"><span class="stop-time">10:40</span><span class="badge badge-warn">🚩 集合出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-3','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">札幌站北口</div>
             <div class="stop-note">10:40 ～ 18:40 Klook 一日遊專車接送 (⚠️請依最終憑證確認是否為 08:30 飯店接送)</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=札幌駅北口" target="_blank" rel="noopener">📍 地圖</a>
+              <button class="btn btn-outline btn-sm" type="button" onclick="openFullscreenCard('札幌駅 北口（鐘の広場付近）', '札幌市北区北6条西3丁目', '🚩 集合點')">🚕 給司機看</button>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d2-4">
             <div class="stop-header">
-              <span class="stop-time">11:40</span>
-              <span class="badge badge-primary">🗿 景點</span>
+              <div class="stop-header-left"><span class="stop-time">11:40</span><span class="badge badge-primary">🗿 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-4','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">滝野霊園 ふるさと霊廟</div>
+            <div class="photo-tip">📸 <strong>必拍亮點：</strong>墓園入口處整排巨大的「復活島摩艾石像群」與「巨石陣 (Stonehenge)」，冬季襯著白雪超有神祕壯闊感！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=真駒内滝野霊園" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d2-5">
             <div class="stop-header">
-              <span class="stop-time">12:40</span>
-              <span class="badge badge-primary">⛩️ 景點</span>
+              <div class="stop-header-left"><span class="stop-time">12:40</span><span class="badge badge-primary">⛩️ 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-5','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">頭大佛殿</div>
+            <div class="pro-tip">🏛️ <strong>建築朝聖：</strong>安藤忠雄大師設計！室外只見大佛頭頂露在白雪覆蓋的山丘外，必須走過寧靜的水庭與 135 公尺混凝土光影隧道才能仰望莊嚴大佛全身，建築空間感令人震撼！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=頭大仏殿" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d2-6">
             <div class="stop-header">
-              <span class="stop-time">13:40</span>
-              <span class="badge badge-primary">🌊 景點</span>
+              <div class="stop-header-left"><span class="stop-time">13:40</span><span class="badge badge-primary">🌊 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-6','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">「みちしるべ ~ 洞爺の人」速水史郎</div>
             <div class="stop-actions">
@@ -1404,74 +1727,81 @@
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d2-7">
             <div class="stop-header">
-              <span class="stop-time">14:40</span>
-              <span class="badge badge-primary">🏔️ 展望台</span>
+              <div class="stop-header-left"><span class="stop-time">14:40</span><span class="badge badge-primary">🏔️ 展望台</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-7','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">SAIRO展望台</div>
+            <div class="photo-tip">📸 <strong>取景攻略：</strong>一覽洞爺湖全景、湖中島與有珠山的絕佳制高點！売店必看牧家白色氣球布丁與北海道生乳優格飲。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=サイロ展望台" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d2-8">
             <div class="stop-header">
-              <span class="stop-time">15:40</span>
-              <span class="badge badge-accent">🍦 牧場甜點</span>
+              <div class="stop-header-left"><span class="stop-time">15:40</span><span class="badge badge-accent">🍦 牧場甜點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-8','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">Lake Hill Farm</div>
+            <div class="pro-tip">🍨 <strong>必吃清單：</strong>必點每日牧場鮮乳現做的義式冰淇淋（Gelato）雙球！推薦「濃純牛奶 ＋ 季節南瓜／藍莓」，店內溫暖又能遠眺羊蹄山！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=レークヒル・ファーム" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d2-9">
             <div class="stop-header">
-              <span class="stop-time">16:40</span>
-              <span class="badge badge-primary">♨️ 景點</span>
+              <div class="stop-header-left"><span class="stop-time">16:40</span><span class="badge badge-primary">♨️ 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-9','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">洞爺湖溫泉</div>
+            <div class="pro-tip">♨️ 湖畔設有免費「手湯」與「足湯」可暖身（帶條小毛巾擦腳超貼心），冬季溫泉街點燈隧道很有氣氛！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=洞爺湖温泉" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d2-10">
             <div class="stop-header">
-              <span class="stop-time">17:40</span>
-              <span class="badge badge-primary">🐻 景點</span>
+              <div class="stop-header-left"><span class="stop-time">17:40</span><span class="badge badge-primary">🐻 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-10','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">昭和新山熊牧場</div>
+            <div class="pro-tip">🐻 <strong>趣味互動：</strong>在入口買一小盒熊餅乾或蘋果，棕熊們會聰明地站立舉起前掌拍手跟你討食物，非常逗趣可愛！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=昭和新山熊牧場" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d2-11">
             <div class="stop-header">
-              <span class="stop-time">18:40</span>
-              <span class="badge badge-primary">🌋 景點</span>
+              <div class="stop-header-left"><span class="stop-time">18:40</span><span class="badge badge-primary">🌋 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-11','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">登別地獄谷</div>
+            <div class="pro-tip">⚠️ <strong>防滑與點燈：</strong>夜晚地獄谷木棧道沿路亮起「鬼火之路」微光，配合硫磺熱煙與白雪宛如異世界！木棧道有水氣易結薄冰，請走穩慢行！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=登別地獄谷" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
           <div class="timeline-connector">
-            🚇 <strong>札幌站/市區下車點 → Yakiniku Kiraku Susukino：</strong>若於札幌站下車，搭地鐵南北線「さっぽろ駅」→「すすきの駅」(約 3 分，¥210) 南下步行 5 分鐘 (位於南6条西5丁目；亦可從札幌市電「東本願寺前駅」步行 4 分)。
+            🚇 <strong>札幌站/市區下車點 → Yakiniku Kiraku Susukino：</strong>若於札幌站下車，搭<span class="line-dot line-n">🟢 地鐵南北線</span>「さっぽろ駅」→「すすきの駅」(約 3 分，¥210) 南下步行 5 分鐘 (位於南6条西5丁目；亦可從札幌市電「東本願寺前駅」步行 4 分)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d2-12">
             <div class="stop-header">
-              <span class="stop-time">20:15</span>
-              <span class="badge badge-accent">🥩 晚餐 (需預訂)</span>
+              <div class="stop-header-left"><span class="stop-time">20:15</span><span class="badge badge-accent">🥩 晚餐 (需預訂)</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-12','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">Yakiniku Kiraku Susukino (すすきの焼肉きらく)</div>
             <div class="stop-note">Hot Pepper / Gurunavi / KKday / AutoReserve 預約</div>
+            <div class="pro-tip">🥩 <strong>和牛享受：</strong>從六本木紅到薄野的高質感和牛燒肉！必點招牌鋪滿蔥花的「超級蔥鹽牛舌」與極嫩黑毛和牛，配一杯 Sapporo Classic 生啤酒超級滿足！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=すすきの焼肉きらく" target="_blank" rel="noopener">📍 地圖</a>
+              <button class="btn btn-outline btn-sm" type="button" onclick="openFullscreenCard('すすきの焼肉 きらく', '札幌市中央区南6条西5丁目', '🥩 晚餐燒肉')">🚕 給司機看</button>
             </div>
           </div>
 
@@ -1479,12 +1809,13 @@
             🚶 <strong>Kiraku → 飯店：</strong>步行約 6-7 分鐘回 the b sapporo。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d2-13">
             <div class="stop-header">
-              <span class="stop-time">21:55</span>
-              <span class="badge badge-success">🏨 休息</span>
+              <div class="stop-header-left"><span class="stop-time">21:55</span><span class="badge badge-success">🏨 休息</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d2-13','day2')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
+            <div class="pro-tip">🔋 今晚把行動電源、相機充飽電，明天要前往北海道最冷、雪景最夢幻的美瑛富良野！</div>
           </div>
         </div>
       </div>
@@ -1492,12 +1823,30 @@
 
     <!-- ==================== TAB: DAY 3 ==================== -->
     <section id="tab-day3" class="tab-panel">
-      <div class="day-banner">
+      <div class="day-banner day-banner-d3">
         <div class="day-banner-top">
           <span>第3天｜2026/11/27 (五)</span>
           <span>🚌 Klook 一日遊</span>
         </div>
         <h2 class="day-banner-title">美瑛富良野・白金青池＆森林精靈露台點燈</h2>
+        <div class="day-meta-pills">
+          <span class="day-meta-pill">🌡️ 美瑛/富良野極寒 -6°C ~ 1°C</span>
+          <span class="day-meta-pill">📱 必備暖暖包保護手機</span>
+          <button class="copy-day-btn" type="button" onclick="copyDayText('day3', 'Day 3 (11/27 五) 美瑛青池精靈露台')">📋 複製本日行程</button>
+        </div>
+      </div>
+
+      <!-- Visual Route Strip -->
+      <div class="route-strip">
+        <span class="route-node">🍙 ありんこ飯糰</span><span class="route-arrow">➔</span>
+        <span class="route-node">🥖 どんぐり麵包</span><span class="route-arrow">➔</span>
+        <span class="route-node">🚩 北1條集合</span><span class="route-arrow">➔</span>
+        <span class="route-node">❄️ 四季彩之丘</span><span class="route-arrow">➔</span>
+        <span class="route-node">🌲 聖誕樹</span><span class="route-arrow">➔</span>
+        <span class="route-node">💧 白鬚瀑布</span><span class="route-arrow">➔</span>
+        <span class="route-node">✨ 白金青池</span><span class="route-arrow">➔</span>
+        <span class="route-node">🧚 精靈露台</span><span class="route-arrow">➔</span>
+        <span class="route-node">🍦 Seicomart</span>
       </div>
 
       <!-- Day 3 Note -->
@@ -1516,6 +1865,9 @@
           <li class="note-item"><span class="note-icon">🍙</span><div><strong>早午餐：</strong>おにぎりのありんこ (起司柴魚飯糰+豚汁) + どんぐり 大通店 (買竹輪麵包帶上車當點心)</div></li>
           <li class="note-item"><span class="note-icon">🍦</span><div><strong>宵夜：</strong>セイコーマート ザ ノット 札幌店 (北海道限定超商，有 HOT CHEF 現做熱食與哈密瓜霜淇淋，離飯店步行1分鐘)</div></li>
         </ul>
+        <div class="alert-box">
+          🔋 <strong>美瑛防低溫斷電提醒：</strong>美瑛/富良野山區入夜常跌破 -5°C，手機在低溫下容易瞬間掉電關機！強烈建議<strong>貼一包小暖暖包在手機背殼（避開鏡頭）或放溫暖口袋</strong>，並多備行動電源！
+        </div>
       </div>
 
       <!-- Day 3 Transit Overview -->
@@ -1544,13 +1896,20 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">⏱️ 時間軸行程 (Scheduler)</h3>
-          <span class="badge badge-primary">12 個行程點</span>
+          <span class="badge badge-primary" id="progress-day3">0 / 12 已完成</span>
         </div>
-        <div class="timeline">
-          <div class="timeline-stop">
+        <div class="filter-bar" data-day="day3">
+          <button class="filter-chip active" onclick="filterTimeline('day3','all',this)">全部</button>
+          <button class="filter-chip" onclick="filterTimeline('day3','food',this)">🍽️ 美食</button>
+          <button class="filter-chip" onclick="filterTimeline('day3','spot',this)">❄️ 景點</button>
+          <button class="filter-chip" onclick="filterTimeline('day3','transit',this)">🚌 集合/飯店</button>
+        </div>
+
+        <div class="timeline" id="timeline-day3">
+          <div class="timeline-stop" data-cat="transit" id="stop-d3-1">
             <div class="stop-header">
-              <span class="stop-time">10:15</span>
-              <span class="badge badge-success">🏨 出發</span>
+              <div class="stop-header-left"><span class="stop-time">10:15</span><span class="badge badge-success">🏨 出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-1','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
           </div>
@@ -1559,13 +1918,14 @@
             🚶 <strong>飯店 → おにぎりのありんこ：</strong>走 Pole Town / Aurora Town 地下街暖氣步行約 6-7 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d3-2">
             <div class="stop-header">
-              <span class="stop-time">10:25</span>
-              <span class="badge badge-accent">🍙 早午餐</span>
+              <div class="stop-header-left"><span class="stop-time">10:25</span><span class="badge badge-accent">🍙 早午餐</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-2','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">おにぎりのありんこ オーロラタウン店</div>
             <div class="stop-note">推薦：起司柴魚飯糰 + 豚汁</div>
+            <div class="pro-tip">🍙 <strong>老饕吃法：</strong>飯糰現點現捏熱騰騰融化起司超香！「起司柴魚 (チーズかつお)」與「山わさび牛肉 (山葵牛肉)」皆是定番人氣，搭配滿滿料的白味噌豚汁超暖胃。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=おにぎりのありんこ+オーロラタウン店" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1575,13 +1935,14 @@
             🚶 <strong>ありんこ → どんぐり 大通店：</strong>地下街直通 Le Trois 1F 步行 2 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d3-3">
             <div class="stop-header">
-              <span class="stop-time">11:05</span>
-              <span class="badge badge-accent">🥖 車上點心採買</span>
+              <div class="stop-header-left"><span class="stop-time">11:05</span><span class="badge badge-accent">🥖 車上點心採買</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-3','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">どんぐり 大通店</div>
             <div class="stop-note">買竹輪麵包帶上車當點心 (Le Trois 1F)</div>
+            <div class="pro-tip">🥖 <strong>札幌靈魂麵包：</strong>竹輪麵包 (ちくわパン) 的發源名店！整條魚漿竹輪夾鮪魚沙拉口感豐富，也能抓一塊可樂餅或炸雞塊帶上長途巴士解饞！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=どんぐり+大通店+札幌" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1591,10 +1952,10 @@
             🚶 <strong>どんぐり → 北１條集合點：</strong>出來走 1-2 分鐘即達集合點 (大通站 31 號出口 / 北1條)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d3-4">
             <div class="stop-header">
-              <span class="stop-time">11:40</span>
-              <span class="badge badge-warn">🚩 集合出發</span>
+              <div class="stop-header-left"><span class="stop-time">11:40</span><span class="badge badge-warn">🚩 集合出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-4','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">北１條 (大通站 31 號出口)</div>
             <div class="stop-note">11:40 ～ 22:01 Klook 一日遊專車接送</div>
@@ -1603,65 +1964,70 @@
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d3-5">
             <div class="stop-header">
-              <span class="stop-time">15:01</span>
-              <span class="badge badge-primary">❄️ 景點</span>
+              <div class="stop-header-left"><span class="stop-time">15:01</span><span class="badge badge-primary">❄️ 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-5','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">四季彩之丘</div>
+            <div class="pro-tip">❄️ <strong>冬季限定玩法：</strong>白茫茫的丘陵雪原超療癒！若雪量足夠可自費體驗雪上摩托車或雪橇，室內羊駝牧場也能近距離看草泥馬！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=四季彩の丘" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d3-6">
             <div class="stop-header">
-              <span class="stop-time">16:01</span>
-              <span class="badge badge-primary">🌲 景點</span>
+              <div class="stop-header-left"><span class="stop-time">16:01</span><span class="badge badge-primary">🌲 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-6','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">Christmas tree (美瑛聖誕樹)</div>
+            <div class="photo-tip">📸 <strong>拍照與禮儀：</strong>16:01 剛好逢黃昏日落前後，雪原上的孤獨雲杉樹隨手拍都是電影劇照！⚠️ <strong>切勿跨越邊線踏入私人農田雪地</strong>，請站在安全道路旁拍攝。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=クリスマスツリーの木+美瑛" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d3-7">
             <div class="stop-header">
-              <span class="stop-time">17:01</span>
-              <span class="badge badge-primary">💧 景點</span>
+              <div class="stop-header-left"><span class="stop-time">17:01</span><span class="badge badge-primary">💧 景點</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-7','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">白鬚瀑布</div>
+            <div class="photo-tip">📸 <strong>鈷藍溪水奇觀：</strong>站在藍色鐵橋上往下拍攝！富含礦物質的美瑛川呈現不可思議的藍寶石色，兩側垂掛著霧淞與冰柱，入夜點燈極美。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=白ひげの滝" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d3-8">
             <div class="stop-header">
-              <span class="stop-time">18:01</span>
-              <span class="badge badge-primary">✨ 夜間點燈</span>
+              <div class="stop-header-left"><span class="stop-time">18:01</span><span class="badge badge-primary">✨ 夜間點燈</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-8','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">白金青池</div>
+            <div class="photo-tip">📸 <strong>冬夜點燈密技：</strong>11 月下旬水面多半覆雪結冰，多段循環色彩燈光投影在雪面與枯木上極其夢幻！記得開啟手機夜間模式並穩住雙手，拍完立刻收進暖暖包口袋！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=白金青い池" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d3-9">
             <div class="stop-header">
-              <span class="stop-time">19:01</span>
-              <span class="badge badge-primary">🧚 夜間點燈</span>
+              <div class="stop-header-left"><span class="stop-time">19:01</span><span class="badge badge-primary">🧚 夜間點燈</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-9','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">森林精靈露台 (Ningle Terrace)</div>
+            <div class="photo-tip">🧚 <strong>童話夢境：</strong>隱藏在森林的 15 棟手作工藝小木屋，屋頂積雪與溫暖黃光就像童話精靈部落！木棧道有雪會微滑，走路留意腳下喔。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=ニングルテラス" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d3-10">
             <div class="stop-header">
-              <span class="stop-time">22:01</span>
-              <span class="badge badge-primary">🚌 返回解散</span>
+              <div class="stop-header-left"><span class="stop-time">22:01</span><span class="badge badge-primary">🚌 返回解散</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-10','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">北１條</div>
           </div>
@@ -1670,22 +2036,23 @@
             🚶 <strong>北1條解散 → セイコーマート：</strong>沿地下街 Pole Town 或地面步行約 10 分鐘至南3条西3丁目「セイコーマート」(THE KNOT 1F)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d3-11">
             <div class="stop-header">
-              <span class="stop-time">22:12</span>
-              <span class="badge badge-accent">🍦 宵夜採買</span>
+              <div class="stop-header-left"><span class="stop-time">22:12</span><span class="badge badge-accent">🍦 宵夜採買</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-11','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">セイコーマート ザ ノット 札幌店</div>
             <div class="stop-note">北海道限定超商，有 HOT CHEF 現做熱食與哈密瓜霜淇淋，離飯店步行1分鐘</div>
+            <div class="pro-tip">🛒 <strong>北海道之光必買：</strong>必吃 <strong>HOT CHEF 現炸無骨雞塊</strong>、現做豬排丼、只要百餘日圓的平價美味義大利麵，以及「<strong>夕張赤肉哈密瓜霜淇淋</strong>」配豐富町濃醇鮮奶！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=セイコーマート+ザ+ノット+札幌店" target="_blank" rel="noopener">📍 地圖</a>
             </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d3-12">
             <div class="stop-header">
-              <span class="stop-time">22:25</span>
-              <span class="badge badge-success">🏨 休息</span>
+              <div class="stop-header-left"><span class="stop-time">22:25</span><span class="badge badge-success">🏨 休息</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d3-12','day3')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
           </div>
@@ -1695,12 +2062,27 @@
 
     <!-- ==================== TAB: DAY 4 ==================== -->
     <section id="tab-day4" class="tab-panel">
-      <div class="day-banner">
+      <div class="day-banner day-banner-d4">
         <div class="day-banner-top">
           <span>第4天｜2026/11/28 (六)</span>
           <span>🌅 日落約 16:04</span>
         </div>
         <h2 class="day-banner-title">小樽一日遊・三角市場・堺町通・天狗山夜景</h2>
+        <div class="day-meta-pills">
+          <span class="day-meta-pill">🌡️ 小樽海風 0°C ~ 4°C</span>
+          <span class="day-meta-pill">🚂 JR 坐右側看海</span>
+          <button class="copy-day-btn" type="button" onclick="copyDayText('day4', 'Day 4 (11/28 六) 小樽一日遊')">📋 複製本日行程</button>
+        </div>
+      </div>
+
+      <!-- Visual Route Strip -->
+      <div class="route-strip">
+        <span class="route-node">🚆 JR快速看海</span><span class="route-arrow">➔</span>
+        <span class="route-node">🦀 三角市場</span><span class="route-arrow">➔</span>
+        <span class="route-node">⛩️ 住吉神社</span><span class="route-arrow">➔</span>
+        <span class="route-node">🍰 堺町通〜運河</span><span class="route-arrow">➔</span>
+        <span class="route-node">🚠 天狗山夜景</span><span class="route-arrow">➔</span>
+        <span class="route-node">🥩 北唐辛子烤羊</span>
       </div>
 
       <!-- Day 4 Note -->
@@ -1724,7 +2106,7 @@
         <ul class="transit-list">
           <li class="transit-list-item">
             <span class="transit-route-label">飯店 → 札幌車站 → 小樽</span>
-            步行至地鐵南北線「すすきの駅」→「さっぽろ駅」(2 站約 3 分，¥210)，轉乘「JR 函館本線 快速 Airport 號」至小樽站 (約 32-35 分，¥750，可刷 IC 卡；坐右側靠窗有海景)。
+            步行至<span class="line-dot line-n">🟢 地鐵南北線</span>「すすきの駅」→「さっぽろ駅」(2 站約 3 分，¥210)，轉乘「JR 函館本線 快速 Airport 號」至小樽站 (約 32-35 分，¥750，可刷 IC 卡；坐右側靠窗有海景)。
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">小樽站 → 小樽三角市場</span>
@@ -1748,7 +2130,7 @@
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">北唐辛子 本店 → 飯店</span>
-            步行約 10 分鐘回 JR 小樽站 (或步行約 13 分至南小樽站)，搭 JR 快速回「札幌駅」(約 35 分)，轉地鐵南北線回「すすきの駅」步行 3 分回飯店。
+            步行約 10 分鐘回 JR 小樽站 (或步行約 13 分至南小樽站)，搭 JR 快速回「札幌駅」(約 35 分)，轉<span class="line-dot line-n">🟢 地鐵南北線</span>回「すすきの駅」步行 3 分回飯店。
           </li>
         </ul>
       </details>
@@ -1757,34 +2139,43 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">⏱️ 時間軸行程 (Scheduler)</h3>
-          <span class="badge badge-primary">9 個行程點</span>
+          <span class="badge badge-primary" id="progress-day4">0 / 9 已完成</span>
         </div>
-        <div class="timeline">
-          <div class="timeline-stop">
+        <div class="filter-bar" data-day="day4">
+          <button class="filter-chip active" onclick="filterTimeline('day4','all',this)">全部</button>
+          <button class="filter-chip" onclick="filterTimeline('day4','food',this)">🦀 美食</button>
+          <button class="filter-chip" onclick="filterTimeline('day4','shop',this)">🍰 採買</button>
+          <button class="filter-chip" onclick="filterTimeline('day4','spot',this)">🚠 景點</button>
+          <button class="filter-chip" onclick="filterTimeline('day4','transit',this)">🚆 交通/飯店</button>
+        </div>
+
+        <div class="timeline" id="timeline-day4">
+          <div class="timeline-stop" data-cat="transit" id="stop-d4-1">
             <div class="stop-header">
-              <span class="stop-time">09:00</span>
-              <span class="badge badge-success">🏨 出發</span>
+              <div class="stop-header-left"><span class="stop-time">09:00</span><span class="badge badge-success">🏨 出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-1','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
           </div>
 
           <div class="timeline-connector">
-            🚇 <strong>飯店 → 札幌車站：</strong>步行至地鐵南北線「すすきの駅」→「さっぽろ駅」(2 站約 3 分，¥210)。
+            🚇 <strong>飯店 → 札幌車站：</strong>步行至<span class="line-dot line-n">🟢 地鐵南北線</span>「すすきの駅」→「さっぽろ駅」(2 站約 3 分，¥210)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d4-2">
             <div class="stop-header">
-              <span class="stop-time">09:15</span>
-              <span class="badge badge-primary">🚉 轉乘 JR</span>
+              <div class="stop-header-left"><span class="stop-time">09:15</span><span class="badge badge-primary">🚆 轉乘 JR</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-2','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">札幌車站</div>
             <div class="stop-note">轉乘「JR 函館本線 快速 Airport 號」至小樽站 (約 32-35 分，¥750，可刷 IC 卡；💡坐右側靠窗有海景)</div>
+            <div class="photo-tip">🌊 <strong>海景鐵道秘訣：</strong>過「錢函駅」後直到小樽之間緊貼日本海奔馳！往列車前進方向的「右側」座位看過去，浪花白雪就在窗前！</div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d4-3">
             <div class="stop-header">
-              <span class="stop-time">10:05</span>
-              <span class="badge badge-primary">🚉 抵達小樽</span>
+              <div class="stop-header-left"><span class="stop-time">10:05</span><span class="badge badge-primary">🚉 抵達小樽</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-3','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">小樽 (JR 小樽駅)</div>
           </div>
@@ -1793,12 +2184,13 @@
             🚶 <strong>小樽站 → 小樽三角市場：</strong>出 JR 小樽站左手邊上坡步行僅 2 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d4-4">
             <div class="stop-header">
-              <span class="stop-time">10:10</span>
-              <span class="badge badge-accent">🦀 海鮮早午餐</span>
+              <div class="stop-header-left"><span class="stop-time">10:10</span><span class="badge badge-accent">🦀 海鮮早午餐</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-4','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">小樽三角市場</div>
+            <div class="pro-tip">🦀 <strong>排隊與點餐攻略：</strong>「滝波食堂」與「味処たけだ / 武田鮮魚店」最受歡迎！推薦自由選配海膽、鮭魚卵、生干貝、甜蝦與帝王蟹腳，10:10 早一點到剛好避開午餐排隊人潮！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=小樽三角市場" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1808,12 +2200,13 @@
             🚃 <strong>三角市場 → 小樽住吉神社：</strong>走回 JR 小樽站搭 1 站至「南小樽駅」(約 3 分，¥200)，出站右轉步行約 8-10 分鐘；或於小樽站前搭中央巴士至「住吉神社前」下車 (約 7 分)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d4-5">
             <div class="stop-header">
-              <span class="stop-time">11:40</span>
-              <span class="badge badge-primary">⛩️ 神社參拜</span>
+              <div class="stop-header-left"><span class="stop-time">11:40</span><span class="badge badge-primary">⛩️ 神社參拜</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-5','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">小樽總鎮守 小樽住吉神社</div>
+            <div class="photo-tip">📸 <strong>隱藏絕景：</strong>爬上白雪階梯後往回頭看！朱紅鳥居延伸至小樽灣藍海，景色典雅又寧靜！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=小樽住吉神社" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1823,13 +2216,21 @@
             🚶 <strong>住吉神社 → Sakaimachi Street (堺町通)：</strong>步行約 8-10 分鐘下坡至「童話十字路口 (南小樽端)」，沿堺町通一路向北順逛至小樽運河 (完全不走回頭路)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="shop" id="stop-d4-6">
             <div class="stop-header">
-              <span class="stop-time">12:40</span>
-              <span class="badge badge-primary">🛍️ 甜點老街散策</span>
+              <div class="stop-header-left"><span class="stop-time">12:40</span><span class="badge badge-primary">🍰 甜點老街散策</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-6','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">Sakaimachi Street (堺町通〜小樽運河)</div>
             <div class="stop-note">店家冬天約 17:00-18:00 打烊</div>
+            <div class="pro-tip">
+              🍰 <strong>堺町通甜點巡禮必吃必逛：</strong><br/>
+              • <strong>小樽音樂盒堂本館：</strong>門口蒸氣鐘每整點與 15 分響笛噴霧氣！<br/>
+              • <strong>LeTAO 本店：</strong>2F 喫茶室吃「奇蹟雙層乳酪蛋糕」、3F 免費眺望童話十字路口。<br/>
+              • <strong>北菓樓：</strong>必吃現烤爆漿「<strong>夢不思議大泡芙</strong>」、妖精之森年輪蛋糕、開拓米菓。<br/>
+              • <strong>六花亭：</strong>單顆朗姆葡萄餅乾配免費熱咖啡。<br/>
+              • <strong>小樽運河 (淺草橋)：</strong>拍紅磚石造倉庫倒影後，約 <strong>15:15 準備往小樽站前 4 號巴士月台出發</strong>！
+            </div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=小樽堺町通り商店街" target="_blank" rel="noopener">📍 地圖 (堺町通)</a>
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=小樽運河" target="_blank" rel="noopener">📍 地圖 (小樽運河)</a>
@@ -1840,13 +2241,14 @@
             🚌 <strong>堺町通 (運河端) → 小樽天狗山纜車：</strong>從運河散步約 12-15 分鐘回「JR 小樽站前巴士總站 4 號乘車處」，搭北海道中央巴士【9 號 天狗山ロープウエイ線】至終點站 (車程約 20 分，¥240；<strong>15時台發車：15:07 / 15:37 / 15:57，搭 15:37 剛好 15:57 到看夕陽夜景</strong>)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d4-7">
             <div class="stop-header">
-              <span class="stop-time">16:00</span>
-              <span class="badge badge-primary">🚠 夕陽與夜景</span>
+              <div class="stop-header-left"><span class="stop-time">16:00</span><span class="badge badge-primary">🚠 夕陽與夜景</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-7','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">小樽天狗山纜車、滑雪場</div>
             <div class="stop-note">冬天第一天開放｜11/28 日落約 16:04｜纜車往返 ¥2,000</div>
+            <div class="photo-tip">📸 <strong>米其林一星夜景攻略：</strong>16:00 上山正好完美銜接日落紅霞 → 藍色魔幻時刻 → 萬家燈火夜景！山頂記得摸摸「大天狗神像」的長鼻子開運，電影《情書》取景雪坡也在展望台旁，山頂海風刺骨務必戴好毛帽手套！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=小樽天狗山ロープウエイ" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -1856,29 +2258,32 @@
             🚌 <strong>天狗山 → 北唐辛子 本店：</strong>搭下山巴士【9 號】(<strong>17時台：17:07 / 17:37或17:47</strong>)，⚠️<strong>不用坐回小樽站！中途在「市役所通」下車</strong>步行 3-4 分鐘即達本店 (花園1丁目)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d4-8">
             <div class="stop-header">
-              <span class="stop-time">18:00</span>
-              <span class="badge badge-accent">🥩 晚餐 (需預訂)</span>
+              <div class="stop-header-left"><span class="stop-time">18:00</span><span class="badge badge-accent">🥩 晚餐 (需預訂)</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-8','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">小樽成吉思汗俱樂部 北唐辛子 本店 (北とうがらし 本店)</div>
             <div class="stop-note">電話 0134-24-8929｜花園1丁目</div>
+            <div class="pro-tip">🐑 <strong>烤肉饗宴：</strong>特選鮮嫩不冷凍生羊肉，毫無羊羶味！配上店內特製辛香「北唐辛子」沾醬、吸飽肉汁的烤洋蔥跟熱白飯超級過癮！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=小樽ジンギスカン倶楽部+北とうがらし+本店" target="_blank" rel="noopener">📍 地圖</a>
               <a class="btn btn-outline btn-sm" href="tel:0134-24-8929">📞 0134-24-8929</a>
+              <button class="btn btn-outline btn-sm" type="button" onclick="openFullscreenCard('小樽ジンギスカン倶楽部 北とうがらし 本店', '小樽市花園1丁目4-19', '🐑 成吉思汗烤肉')">🚕 給司機看</button>
             </div>
           </div>
 
           <div class="timeline-connector">
-            🚃 <strong>北唐辛子 本店 → 飯店：</strong>步行約 10 分鐘回 JR 小樽站 (或步行約 13 分至南小樽站)，搭 JR 快速回「札幌駅」(約 35 分)，轉地鐵南北線回「すすきの駅」步行 3 分回飯店。
+            🚃 <strong>北唐辛子 本店 → 飯店：</strong>步行約 10 分鐘回 JR 小樽站 (或步行約 13 分至南小樽站)，搭 JR 快速回「札幌駅」(約 35 分)，轉<span class="line-dot line-n">🟢 地鐵南北線</span>回「すすきの駅」步行 3 分回飯店。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d4-9">
             <div class="stop-header">
-              <span class="stop-time">20:40</span>
-              <span class="badge badge-success">🏨 休息</span>
+              <div class="stop-header-left"><span class="stop-time">20:40</span><span class="badge badge-success">🏨 休息</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d4-9','day4')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
+            <div class="pro-tip">💡 若體力還有餘裕，可去薄野體驗札幌著名的深夜聖代文化（如佐藤堂 / PaL），為小樽浪漫行畫上甜美句點！</div>
           </div>
         </div>
       </div>
@@ -1886,12 +2291,29 @@
 
     <!-- ==================== TAB: DAY 5 ==================== -->
     <section id="tab-day5" class="tab-panel">
-      <div class="day-banner">
+      <div class="day-banner day-banner-d5">
         <div class="day-banner-top">
           <span>第5天｜2026/11/29 (日)</span>
           <span>🚇 週日地鐵一日券 ¥520</span>
         </div>
         <h2 class="day-banner-title">札幌市區經典散策與聖誕市集・螃蟹大餐</h2>
+        <div class="day-meta-pills">
+          <span class="day-meta-pill">🎫 必買假日地鐵券 ¥520</span>
+          <span class="day-meta-pill">⛩️ 長尾山雀御守 + 判官樣</span>
+          <button class="copy-day-btn" type="button" onclick="copyDayText('day5', 'Day 5 (11/29 日) 札幌經典散策與螃蟹')">📋 複製本日行程</button>
+        </div>
+      </div>
+
+      <!-- Visual Route Strip -->
+      <div class="route-strip">
+        <span class="route-node">🥐 VIE DE FRANCE</span><span class="route-arrow">➔</span>
+        <span class="route-node">⛩️ 諏訪神社</span><span class="route-arrow">➔</span>
+        <span class="route-node">⛩️ 北海道神宮</span><span class="route-arrow">➔</span>
+        <span class="route-node">🐷 玉藤豬排</span><span class="route-arrow">➔</span>
+        <span class="route-node">🪒 BicCamera</span><span class="route-arrow">➔</span>
+        <span class="route-node">🎄 大通燈海</span><span class="route-arrow">➔</span>
+        <span class="route-node">🛍️ 狸小路</span><span class="route-arrow">➔</span>
+        <span class="route-node">🦀 かに家</span>
       </div>
 
       <!-- Day 5 Note -->
@@ -1931,7 +2353,7 @@
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">大通 → 札幌諏訪神社</span>
-            直接進地鐵東豐線「大通駅」往榮町方向至「北13条東駅」(2 站約 4 分)，2 號出口步行 3 分鐘。
+            直接進<span class="line-dot line-h">🔵 地鐵東豐線</span>「大通駅」往榮町方向至「北13条東駅」(2 站約 4 分)，2 號出口步行 3 分鐘。
           </li>
           <li class="transit-list-item">
             <span class="transit-route-label">諏訪神社 → 北海道神宮</span>
@@ -1956,25 +2378,34 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">⏱️ 時間軸行程 (Scheduler)</h3>
-          <span class="badge badge-primary">10 個行程點</span>
+          <span class="badge badge-primary" id="progress-day5">0 / 10 已完成</span>
         </div>
-        <div class="timeline">
-          <div class="timeline-stop">
+        <div class="filter-bar" data-day="day5">
+          <button class="filter-chip active" onclick="filterTimeline('day5','all',this)">全部</button>
+          <button class="filter-chip" onclick="filterTimeline('day5','food',this)">🦀 美食</button>
+          <button class="filter-chip" onclick="filterTimeline('day5','shop',this)">🛍️ 購物</button>
+          <button class="filter-chip" onclick="filterTimeline('day5','spot',this)">⛩️ 景點</button>
+          <button class="filter-chip" onclick="filterTimeline('day5','transit',this)">🏨 住宿</button>
+        </div>
+
+        <div class="timeline" id="timeline-day5">
+          <div class="timeline-stop" data-cat="transit" id="stop-d5-1">
             <div class="stop-header">
-              <span class="stop-time">08:45</span>
-              <span class="badge badge-success">🏨 出發</span>
+              <div class="stop-header-left"><span class="stop-time">08:45</span><span class="badge badge-success">🏨 出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-1','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
+            <div class="pro-tip">🎫 <strong>必帶提醒：</strong>請確認「護照正本」帶在身上！（下午去 Bic Camera 與狸小路辦免稅必驗正本！）</div>
           </div>
 
           <div class="timeline-connector">
             🚶 <strong>飯店 → VIE DE FRANCE：</strong>走地下街 Pole Town 北上轉 Aurora Town 步行約 6-7 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d5-2">
             <div class="stop-header">
-              <span class="stop-time">09:00</span>
-              <span class="badge badge-accent">🥐 早餐</span>
+              <div class="stop-header-left"><span class="stop-time">09:00</span><span class="badge badge-accent">🥐 早餐</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-2','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">VIE DE FRANCE オーロラタウン店</div>
             <div class="stop-note">大通地下街 8:00 營業有內用座｜備選：ル・トロワB2F「ひらがなのもりひこ」或札幌站「PAUL」</div>
@@ -1984,16 +2415,17 @@
           </div>
 
           <div class="timeline-connector">
-            🚇 <strong>大通 → 札幌諏訪神社：</strong>於售票機買「ドニチカキップ ¥520」，進地鐵東豐線「大通駅」往榮町方向至「北13条東駅」(2 站約 4 分)，2 號出口步行 3 分鐘。
+            🚇 <strong>大通 → 札幌諏訪神社：</strong>於售票機買「ドニチカキップ ¥520」，進<span class="line-dot line-h">🔵 地鐵東豐線</span>「大通駅」往榮町方向至「北13条東駅」(2 站約 4 分)，2 號出口步行 3 分鐘。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d5-3">
             <div class="stop-header">
-              <span class="stop-time">10:00</span>
-              <span class="badge badge-primary">⛩️ 神社參拜</span>
+              <div class="stop-header-left"><span class="stop-time">10:00</span><span class="badge badge-primary">⛩️ 神社參拜</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-3','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">札幌諏訪神社</div>
             <div class="stop-note">必看：花手水、長尾山雀御守</div>
+            <div class="photo-tip">🐦 <strong>IG 超萌必看：</strong>水池「花手水」繽紛唯美！別忘了求一個北海道限定雪精靈「銀喉長尾山雀 (シマエナガ)」御守或抽詩籤！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=札幌諏訪神社" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -2003,15 +2435,17 @@
             🚇 <strong>諏訪神社 → 北海道神宮：</strong>由「北13条東駅」搭東豐線回「大通駅」，站內轉乘東西線 (往宮の沢方向) 至「円山公園駅」(約 6 分)，3 號出口穿過圓山公園雪徑步行約 12-15 分鐘即達 (全程約 35-40 分)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d5-4">
             <div class="stop-header">
-              <span class="stop-time">11:15</span>
-              <span class="badge badge-primary">⛩️ 神宮參拜</span>
+              <div class="stop-header-left"><span class="stop-time">11:15</span><span class="badge badge-primary">⛩️ 神宮參拜</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-4','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">北海道神宮</div>
             <div class="stop-note">圓山公園雪景、六花亭神宮茶屋現烤「判官樣」(11月 16:00 閉門)</div>
+            <div class="pro-tip">🍵 <strong>神宮限定美味：</strong>參拜後必去神宮旁「六花亭 神宮茶屋」吃現烤熱呼呼的「<strong>判官樣 (判官さま)</strong>」蕎麥紅豆麻糬餅，搭配免費熱茶超溫暖！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=北海道神宮" target="_blank" rel="noopener">📍 地圖</a>
+              <button class="btn btn-outline btn-sm" type="button" onclick="openFullscreenCard('北海道神宮', '札幌市中央区宮ヶ丘474', '⛩️ 北海道神宮')">🚕 給司機看</button>
             </div>
           </div>
 
@@ -2019,13 +2453,14 @@
             🚇 <strong>北海道神宮 → 東急百貨店：</strong>步行回「円山公園駅」搭東西線至「大通駅」，站內轉南北線或東豐線 1 站至「さっぽろ駅」(全程約 25-30 分)，由地下連通道直結進入「さっぽろ東急百貨店」。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d5-5">
             <div class="stop-header">
-              <span class="stop-time">13:15</span>
-              <span class="badge badge-accent">🐷 午餐</span>
+              <div class="stop-header-left"><span class="stop-time">13:15</span><span class="badge badge-accent">🐷 午餐</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-5','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">とんかつ玉藤 札幌東急店</div>
             <div class="stop-note">東急百貨店 10F，北海道創業老舖炸豬排定食，與 Bic Camera 同棟！週日午間可能需候位 20-30 分</div>
+            <div class="pro-tip">🐷 <strong>點餐亮點：</strong>米飯可選白飯／五穀米／月替炊飯，味噌湯三選一，桌邊三種漬菜任吃！外酥內嫩的熟成炸豬排超滿足！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=とんかつ玉藤+札幌東急店" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -2035,15 +2470,17 @@
             🛗 <strong>同棟下樓：</strong>東急百貨店 10F → 5F-6F。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="shop" id="stop-d5-6">
             <div class="stop-header">
-              <span class="stop-time">14:30</span>
-              <span class="badge badge-primary">🪒 電器採買</span>
+              <div class="stop-header-left"><span class="stop-time">14:30</span><span class="badge badge-primary">🪒 電器採買</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-6','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">Bic Camera 札幌店 (東急百貨店 5F-6F)</div>
             <div class="stop-note">採買電動刮鬍刀 (10%免稅+7%優惠券，記得帶護照，⚠️鋰電池刮鬍刀返台須手提上機)</div>
+            <div class="pro-tip">🏷️ <strong>省錢祕訣：</strong>搜尋網路「Bic Camera 遊客 7% 優惠券條碼」+ 出示護照享 10%免稅 + 7%折扣！可用上方「匯率/免稅計算機」馬上換算台幣價差！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=ビックカメラ+札幌店" target="_blank" rel="noopener">📍 地圖</a>
+              <button class="btn btn-outline btn-sm" type="button" onclick="openModal('jpyModal')">💴 算免稅折扣</button>
             </div>
           </div>
 
@@ -2051,13 +2488,14 @@
             🚇 <strong>東急百貨店 → 大通公園：</strong>由「さっぽろ駅」搭地鐵 1 站至「大通駅」(或走地下步行空間 ChikaHo 散步約 10 分) 出站即達大通公園 2 丁目聖誕市集。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="spot" id="stop-d5-7">
             <div class="stop-header">
-              <span class="stop-time">16:00</span>
-              <span class="badge badge-primary">🎄 點燈市集</span>
+              <div class="stop-header-left"><span class="stop-time">16:00</span><span class="badge badge-primary">🎄 點燈市集</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-7','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">大通公園</div>
             <div class="stop-note">慕尼黑聖誕市集 & 札幌白色燈樹節 (16:30 點燈)</div>
+            <div class="photo-tip">📸 16:30 準時亮燈！從天色剛入藍調到完全點燈都很美，推薦順手買杯熱蘋果汁或熱紅酒暖身。</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=さっぽろホワイトイルミネーション+大通公園" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -2067,13 +2505,14 @@
             🚶 <strong>大通公園 → 狸小路：</strong>往南步行 5 分鐘即進狸小路商店街。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="shop" id="stop-d5-8">
             <div class="stop-header">
-              <span class="stop-time">17:15</span>
-              <span class="badge badge-primary">🛍️ 藥妝伴手禮</span>
+              <div class="stop-header-left"><span class="stop-time">17:15</span><span class="badge badge-primary">🛍️ 藥妝伴手禮</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-8','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">狸小路商店街</div>
             <div class="stop-note">藥妝與伴手禮採買</div>
+            <div class="pro-tip">🛍️ <strong>狸小路採買攻略：</strong>有遮雨棚逛街免吹風！3-4 丁目集中松本清、札幌藥妝、唐吉訶德、狸屋免稅伴手禮！⚠️ 免稅密封袋回台出境前千萬不能拆封！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=狸小路商店街" target="_blank" rel="noopener">📍 地圖</a>
             </div>
@@ -2083,16 +2522,18 @@
             🚶 <strong>狸小路 → 札幌かに家 札幌本店：</strong>步行 2 分鐘可先回飯店放戰利品，再往南走 1 個街口 (步行 2 分鐘) 至南4条西2丁目吃螃蟹大餐。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d5-9">
             <div class="stop-header">
-              <span class="stop-time">19:00</span>
-              <span class="badge badge-accent">🦀 晚餐 (需預訂)</span>
+              <div class="stop-header-left"><span class="stop-time">19:00</span><span class="badge badge-accent">🦀 晚餐 (需預訂)</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-9','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">札幌かに家 札幌本店</div>
             <div class="stop-note">或隔壁 北海道かに将軍 札幌本店，離飯店僅1個街口步行2分鐘 (註：原かに本家すすきの店已歇業)</div>
+            <div class="pro-tip">🦀 <strong>豪奢壓軸：</strong>推薦點帝王蟹/松葉蟹會席料理：甜美蟹肉刺身、炭烤蟹腳、蟹膏豆腐與螃蟹雜炊粥，離飯店僅 2 分鐘步程完全不用擔心太晚回家！</div>
             <div class="stop-actions">
               <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=札幌かに家+札幌本店" target="_blank" rel="noopener">📍 地圖</a>
               <a class="btn btn-outline btn-sm" href="https://www.kani-ya.co.jp" target="_blank" rel="noopener">🌐 官網</a>
+              <button class="btn btn-outline btn-sm" type="button" onclick="openFullscreenCard('札幌かに家 札幌本店', '札幌市中央区南4条西2丁目', '🦀 螃蟹大餐')">🚕 給司機看</button>
             </div>
           </div>
 
@@ -2100,12 +2541,13 @@
             🚶 <strong>札幌かに家 → 飯店：</strong>吃完走 2 分鐘回飯店。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d5-10">
             <div class="stop-header">
-              <span class="stop-time">20:50</span>
-              <span class="badge badge-success">🏨 休息</span>
+              <div class="stop-header-left"><span class="stop-time">20:50</span><span class="badge badge-success">🏨 休息</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d5-10','day5')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
+            <div class="pro-tip">🧳 今晚徹底打包戰利品：液體藥妝/免稅袋放進託運大箱；<strong>電動刮鬍刀、行動電源、護照</strong>確認收進隨身手提袋！</div>
           </div>
         </div>
       </div>
@@ -2113,12 +2555,27 @@
 
     <!-- ==================== TAB: DAY 6 ==================== -->
     <section id="tab-day6" class="tab-panel">
-      <div class="day-banner">
+      <div class="day-banner day-banner-d6">
         <div class="day-banner-top">
           <span>第6天｜2026/11/30 (一)</span>
           <span>✈️ 虎航 IT235 11:55 起飛</span>
         </div>
         <h2 class="day-banner-title">新千歲機場早餐／伴手禮・平安返台</h2>
+        <div class="day-meta-pills">
+          <span class="day-meta-pill">🚌 07:39/07:44/07:54 空港巴士</span>
+          <span class="day-meta-pill">⏰ 最晚 10:00 往國際線</span>
+          <button class="copy-day-btn" type="button" onclick="copyDayText('day6', 'Day 6 (11/30 一) 機場掃貨與返台')">📋 複製本日行程</button>
+        </div>
+      </div>
+
+      <!-- Visual Route Strip -->
+      <div class="route-strip">
+        <span class="route-node">🏨 07:30退房</span><span class="route-arrow">➔</span>
+        <span class="route-node">🚌 機場巴士</span><span class="route-arrow">➔</span>
+        <span class="route-node">🛍️ 國內線2F掃貨</span><span class="route-arrow">➔</span>
+        <span class="route-node">🍜 3F拉麵道場</span><span class="route-arrow">➔</span>
+        <span class="route-node">🛫 10:00國際線報到</span><span class="route-arrow">➔</span>
+        <span class="route-node">🏠 返抵桃園</span>
       </div>
 
       <!-- Day 6 Note -->
@@ -2155,25 +2612,26 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">⏱️ 時間軸行程 (Scheduler)</h3>
-          <span class="badge badge-primary">4 個行程點</span>
+          <span class="badge badge-primary" id="progress-day6">0 / 4 已完成</span>
         </div>
-        <div class="timeline">
-          <div class="timeline-stop">
+        <div class="timeline" id="timeline-day6">
+          <div class="timeline-stop" data-cat="transit" id="stop-d6-1">
             <div class="stop-header">
-              <span class="stop-time">07:30</span>
-              <span class="badge badge-success">🏨 退房出發</span>
+              <div class="stop-header-left"><span class="stop-time">07:30</span><span class="badge badge-success">🏨 退房出發</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d6-1','day6')">✓ 未完成</button>
             </div>
             <div class="stop-title">the b sapporo</div>
+            <div class="pro-tip">🔍 退房檢查：房內插頭、護照、電動刮鬍刀放手提袋、房卡歸還！</div>
           </div>
 
           <div class="timeline-connector">
             🚶 <strong>飯店 → 機場巴士站：</strong>走出飯店過馬路斜對面即達「南3条すすきの」機場巴士站 (步行僅 3-5 分鐘)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d6-2">
             <div class="stop-header">
-              <span class="stop-time">07:35</span>
-              <span class="badge badge-primary">🚌 機場巴士</span>
+              <div class="stop-header-left"><span class="stop-time">07:35</span><span class="badge badge-primary">🚌 機場巴士</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d6-2','day6')">✓ 未完成</button>
             </div>
             <div class="stop-title">新千歲機場巴士薄野搭乘處 (南3条すすきの)</div>
             <div class="stop-note">07:39 / 07:44 / 07:54 皆有班次，免預約現場排隊上車｜車程約 75-80 分，¥1,500 (現金/IC卡/信用卡感應)</div>
@@ -2186,30 +2644,322 @@
             🚌 <strong>薄野 → 新千歲機場：</strong>先停「國內線航廈」(09:00 拉麵道場開門)，最晚 10:00 走室內聯絡通道 (約 10 分鐘) 至國際線 3F 虎航櫃檯報到 (11:10 關櫃)。
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="food" id="stop-d6-3">
             <div class="stop-header">
-              <span class="stop-time">08:55</span>
-              <span class="badge badge-accent">🍜 機場早餐＆報到</span>
+              <div class="stop-header-left"><span class="stop-time">08:55</span><span class="badge badge-accent">🍜 機場早餐＆報到</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d6-3','day6')">✓ 未完成</button>
             </div>
             <div class="stop-title">CTS·新千歲機場</div>
             <div class="stop-note">虎航 IT235 11:55 起飛 (11:10 關櫃)</div>
+            <div class="pro-tip">
+              🛍️ <strong>08:55 ～ 10:00 黃金一小時終極攻略：</strong><br/>
+              1. <strong>先奔國內線 2F 搶排「美瑛選果 玉米麵包」</strong>（不加一滴水的純玉米香甜，常出爐秒殺！）。<br/>
+              2. 買 <strong>KINOTOYA 極上牛乳霜淇淋</strong>（或起司塔）配逛 2F 超強伴手禮區（ROYCE'、白之戀人、六花亭、LeTAO、Calbee 現炸薯條）。<br/>
+              3. 上 <strong>3F 北海道拉麵道場</strong>（09:00 開門）吃「一幻鮮蝦拉麵」或「白樺山莊」！<br/>
+              4. <strong>⏰ 10:00 準時出發！</strong>走 3F 室內連通道往國際線 3F 虎航櫃檯託運報到（11:10 嚴格關櫃），果凍／布丁／酒類等液體記得裝進大行李箱託運！
+            </div>
           </div>
 
-          <div class="timeline-stop">
+          <div class="timeline-stop" data-cat="transit" id="stop-d6-4">
             <div class="stop-header">
-              <span class="stop-time">15:35</span>
-              <span class="badge badge-success">🏠 平安返台</span>
+              <div class="stop-header-left"><span class="stop-time">15:35</span><span class="badge badge-success">🏠 平安返台</span></div>
+              <button class="visit-toggle" onclick="toggleVisited('stop-d6-4','day6')">✓ 未完成</button>
             </div>
             <div class="stop-title">TPE·臺灣桃園國際機場</div>
+            <div class="pro-tip">🛬 歡迎回家！提醒：日本肉類製品（含火腿香腸真空包、肉乾）禁止帶回台灣，點心糕餅類則可放心攜帶。</div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- ==================== TAB: PREP & PACKING ==================== -->
+    <section id="tab-prep" class="tab-panel">
+      <div class="day-banner day-banner-prep">
+        <div class="day-banner-top">
+          <span>🧳 行前準備＆穿衣指南</span>
+          <span>11月下旬 北海道冬季初期</span>
+        </div>
+        <h2 class="day-banner-title">打包清單・氣溫穿搭・美食備選雷達</h2>
+      </div>
+
+      <!-- Weather Overview -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🌡️ 11 月底北海道氣候與穿搭對策</h3>
+        </div>
+        <div class="weather-grid">
+          <div class="weather-box">
+            <div class="weather-city">札幌・小樽</div>
+            <div class="weather-temp">0°C ~ 5°C</div>
+            <div class="weather-desc">濕冷陣雪／路面易結薄冰</div>
+          </div>
+          <div class="weather-box">
+            <div class="weather-city">洞爺・登別</div>
+            <div class="weather-temp">-1°C ~ 4°C</div>
+            <div class="weather-desc">湖風較強／注意硫磺霧氣</div>
+          </div>
+          <div class="weather-box">
+            <div class="weather-city">美瑛・富良野</div>
+            <div class="weather-temp">-6°C ~ 1°C</div>
+            <div class="weather-desc">積雪深厚／夜拍極度寒冷</div>
+          </div>
+        </div>
+        <div class="pro-tip" style="margin-top:10px;">
+          🧥 <strong>黃金「玉米式穿搭」原則：</strong><br/>
+          日本室內、地鐵與觀光巴士暖氣極強（常達 <strong>22°C ~ 24°C</strong>）！<br/>
+          • <strong>穿搭重點：</strong>透氣排汗發熱內層 ＋ 好穿脫的中層刷毛（D1 WORKMAN 買）＋ <strong>防風防潑水羽絨大衣</strong>（進室內一脫外套就剛好，不會熱到冒汗著涼！）。<br/>
+          • <strong>雪地「企鵝步法」：</strong>走雪地或反光的「黑冰路面」時，重心前傾、小步幅、<strong>全腳掌平踩著地</strong>，手千萬別插口袋！
+        </div>
+      </div>
+
+      <!-- Interactive Packing Checklist -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🎒 必帶行李打包清單</h3>
+          <span class="badge badge-success" id="packProgress">0 / 16 已打包</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-fill" id="packBar" style="width:0%"></div></div>
+        <ul class="checklist" id="packingList">
+          <li class="check-item" onclick="togglePack('pack-1', event)"><input type="checkbox" id="pack-1" /><div class="check-body"><div class="check-title">🪪 護照正本（辦理免稅商店購物每天必帶出門！）</div><div class="check-meta">並拍一份護照首頁照片存在手機裡</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-2', event)"><input type="checkbox" id="pack-2" /><div class="check-body"><div class="check-title">📱 Visit Japan Web (VJW) 入境 & 海關 QR Code 截圖</div><div class="check-meta">先離線截圖存相簿，下飛機不用搶機場 WiFi</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-3', event)"><input type="checkbox" id="pack-3" /><div class="check-body"><div class="check-title">💴 日幣現金 ＋ 海外回饋高信用卡 ＋ Suica/ICOCA 西瓜卡</div><div class="check-meta">iPhone 可直接 Apple Wallet 加值交通卡刷搭 JR/地鐵/巴士</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-4', event)"><input type="checkbox" id="pack-4" /><div class="check-body"><div class="check-title">🎫 Klook 兩日遊憑證 ＋ 飯店訂房確認信 (離線 PDF)</div><div class="check-meta">特別確認 Day 2 登別洞爺湖接送時間</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-5', event)"><input type="checkbox" id="pack-5" /><div class="check-body"><div class="check-title">🔋 大容量行動電源 ＋ 充電線（⚠️必須隨身手提上機）</div><div class="check-meta">美瑛低溫手機掉電極快，務必帶出門</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-6', event)"><input type="checkbox" id="pack-6" /><div class="check-body"><div class="check-title">🔥 暖暖包（手握式＋鞋底貼式各一包，北海道超商也可補買）</div><div class="check-meta">貼一包在手機背面外殼防低溫自動關機</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-7', event)"><input type="checkbox" id="pack-7" /><div class="check-body"><div class="check-title">🧤 防水防風觸控手套、毛帽（遮耳尤佳）、圍巾/脖圍</div><div class="check-meta">小樽海風與天狗山山頂風吹起來耳朵會痛，毛帽必備！</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-8', event)"><input type="checkbox" id="pack-8" /><div class="check-body"><div class="check-title">🧦 保暖衣著（Day 1 下午會在 WORKMAN & Sports Depo 大採買）</div><div class="check-meta">出發先穿基本保暖，留空間給新買的外套與雪靴</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-9', event)"><input type="checkbox" id="pack-9" /><div class="check-body"><div class="check-title">❄️ 簡易冰爪 / 鞋底防滑套（可視當地積雪狀況備用）</div><div class="check-meta">進室內或地鐵站前記得拆掉以免刮傷地板滑倒</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-10', event)"><input type="checkbox" id="pack-10" /><div class="check-body"><div class="check-title">🧴 高保濕護唇膏、護手霜、身體乳液</div><div class="check-meta">北海道暖氣房非常乾燥，建議晚上多保濕</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-11', event)"><input type="checkbox" id="pack-11" /><div class="check-body"><div class="check-title">💊 個人常備藥（感冒藥、止痛藥、腸胃藥、暈車藥）</div><div class="check-meta">Day 2 & Day 3 長途巴士山路易暈車可備著</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-12', event)"><input type="checkbox" id="pack-12" /><div class="check-body"><div class="check-title">🛍️ 大型折疊購物袋 / 行李秤 / 壓縮袋</div><div class="check-meta">Day 1 買冬裝和 Day 5 買藥妝伴手禮超實用！</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-13', event)"><input type="checkbox" id="pack-13" /><div class="check-body"><div class="check-title">🕶️ 太陽眼鏡（雪地陽光反射強）與 折疊防風雨傘</div><div class="check-meta">札幌 11 月底偶有雨夾雪</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-14', event)"><input type="checkbox" id="pack-14" /><div class="check-body"><div class="check-title">🔌 日本雙孔插座多孔分接頭 / 轉接頭</div><div class="check-meta">日本電壓 100V，雙平腳插頭台灣電器幾乎通用</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-15', event)"><input type="checkbox" id="pack-15" /><div class="check-body"><div class="check-title">📶 日本 eSIM / 漫遊上網開通確認</div><div class="check-meta">出發前一天確認設定完成</div></div></li>
+          <li class="check-item" onclick="togglePack('pack-16', event)"><input type="checkbox" id="pack-16" /><div class="check-body"><div class="check-title">🛡️ 旅平險 ＋ 海外旅遊不便險</div><div class="check-meta">冬季北海道班機可能受雪況影響，建議保不便險</div></div></li>
+        </ul>
+
+        <!-- Custom Packing Add -->
+        <div class="inline-input-row">
+          <input type="text" id="customPackInput" placeholder="新增自訂必帶物品（如：相機腳架、隱形眼鏡）" onkeydown="if(event.key==='Enter') addCustomPack()" />
+          <button class="btn btn-primary btn-sm" type="button" onclick="addCustomPack()">➕ 新增</button>
+        </div>
+        <ul class="checklist" id="customPackList" style="margin-top:8px;"></ul>
+      </div>
+
+      <!-- Backup Food & Night Parfait Radar -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🍨 札幌深夜＆美食備選雷達 (排隊太長可用)</h3>
+        </div>
+        <ul class="note-list">
+          <li class="note-item"><span class="note-icon">🍧</span><div><strong>札幌夜聖代文化 (シメパフェ)：</strong>薄野特色文化！推薦「パフェ、珈琲、酒、佐藤」或「Parfaiteria PaL」，晚餐燒肉/拉麵後吃藝術品般的多層次聖代！</div></li>
+          <li class="note-item"><span class="note-icon">🍛</span><div><strong>湯咖哩備案：</strong>TREASURE 本店「Soup Curry GARAKU」或炭烤知床雞名店「Suage+」</div></li>
+          <li class="note-item"><span class="note-icon">🍢</span><div><strong>平價宵夜居酒屋：</strong>「串鳥」在薄野有多家分店，平價炭烤串燒與免費熱雞湯超級暖心！</div></li>
+          <li class="note-item"><span class="note-icon">🧀</span><div><strong>必買清單總複習：</strong>WORKMAN 保暖層 / Sports Depo 雪靴 / Chiikawa / LeTAO・北菓樓・六花亭 / Bic Camera 刮鬍刀 / 美瑛選果玉米麵包</div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ==================== TAB: TOOLS (TRAVELER'S TOOLBOX) ==================== -->
+    <section id="tab-tools" class="tab-panel">
+      <div class="day-banner day-banner-tools">
+        <div class="day-banner-top">
+          <span>🛠️ 旅人隨身百寶箱</span>
+          <span>Offline Ready · 離線可用</span>
+        </div>
+        <h2 class="day-banner-title">隨手記帳本・指差日語・即時官方查詢</h2>
+      </div>
+
+      <!-- Live Official Links -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">📡 即時天氣、JR列車與航班動態查詢</h3>
+          <span class="badge badge-primary">需連線</span>
+        </div>
+        <div class="btn-row" style="margin-top:0;">
+          <a class="btn btn-outline btn-sm" href="https://tenki.jp/forecast/1/1/1400/10100.html" target="_blank" rel="noopener">🌤️ tenki.jp 札幌天氣預報</a>
+          <a class="btn btn-outline btn-sm" href="https://www3.jrhokkaido.co.jp/webunkou/" target="_blank" rel="noopener">🚆 JR北海道 列車運行情報</a>
+          <a class="btn btn-outline btn-sm" href="https://www.hokkaido-airports.com/zh-tw/new-chitose/flight/" target="_blank" rel="noopener">✈️ 新千歲機場 今日航班</a>
+        </div>
+      </div>
+
+      <!-- Trip Expense Tracker -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">💰 旅途隨手記帳本</h3>
+          <button class="btn btn-outline btn-sm" type="button" onclick="exportExpenses()">📋 複製明細</button>
+        </div>
+        <div class="expense-summary">
+          <div>
+            <div style="font-size:11.5px;color:var(--text-secondary);">目前累積總消費</div>
+            <div style="font-size:20px;font-weight:900;color:var(--primary-light);font-variant-numeric:tabular-nums;" id="expTotalJpy">¥0</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11.5px;color:var(--text-secondary);">約合新台幣</div>
+            <div style="font-size:18px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;" id="expTotalTwd">NT$ 0</div>
+          </div>
+        </div>
+
+        <div class="expense-form">
+          <input type="text" id="expTitle" placeholder="項目 (如：湯咖哩、雪靴)" style="grid-column: span 2;" />
+          <select id="expCat">
+            <option value="🍜 美食">🍜 美食</option>
+            <option value="🛍️ 購物">🛍️ 購物</option>
+            <option value="🚇 交通">🚇 交通</option>
+            <option value="🎫 門票">🎫 門票</option>
+            <option value="🏨 其他">🏨 其他</option>
+          </select>
+          <input type="number" id="expAmount" placeholder="日幣金額 ¥" inputmode="decimal" onkeydown="if(event.key==='Enter') addExpense()" />
+          <button class="btn btn-primary" type="button" onclick="addExpense()" style="grid-column: span 2;">➕ 記一筆</button>
+        </div>
+
+        <ul class="expense-list" id="expenseList"></ul>
+        <div id="expenseEmpty" style="text-align:center;color:var(--text-muted);font-size:13px;padding:10px;">目前尚未記錄花費</div>
+      </div>
+
+      <!-- Travel Japanese Phrasebook -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🗣️ 旅日實用「指差日語」卡片</h3>
+          <span class="badge badge-primary">點擊放大給店員看</span>
+        </div>
+        <div class="phrase-grid">
+          <div class="phrase-card" onclick="openFullscreenCard('免税（めんぜい）はできますか？', '請問可以辦理免稅嗎？ (Menzei wa dekimasu ka?)', '🛍️ 免稅購物')">
+            <div>
+              <div class="phrase-zh">請問可以辦理免稅嗎？</div>
+              <div class="phrase-jp">免税はできますか？</div>
+              <div class="phrase-romaji">Menzei wa dekimasu ka?</div>
+            </div>
+            <span class="badge badge-primary">放大 🔍</span>
+          </div>
+
+          <div class="phrase-card" onclick="openFullscreenCard('中国語（ちゅうごくご）のメニューはありますか？', '請問有中文菜單嗎？ (Chuugokugo no menyuu wa arimasu ka?)', '🍜 餐廳點餐')">
+            <div>
+              <div class="phrase-zh">請問有中文菜單嗎？</div>
+              <div class="phrase-jp">中国語のメニューはありますか？</div>
+              <div class="phrase-romaji">Chuugokugo no menyuu wa arimasu ka?</div>
+            </div>
+            <span class="badge badge-accent">放大 🔍</span>
+          </div>
+
+          <div class="phrase-card" onclick="openFullscreenCard('おすすめは何（なん）ですか？', '請問有什麼推薦的嗎？ (Osusume wa nan desu ka?)', '🍜 餐廳點餐')">
+            <div>
+              <div class="phrase-zh">請問有什麼推薦的菜色？</div>
+              <div class="phrase-jp">おすすめは何ですか？</div>
+              <div class="phrase-romaji">Osusume wa nan desu ka?</div>
+            </div>
+            <span class="badge badge-accent">放大 🔍</span>
+          </div>
+
+          <div class="phrase-card" onclick="openFullscreenCard('お会計（かいけい）は別々（べつべつ）にお願いします', '結帳請分開計算，謝謝！ (Okaikei wa betsubetsu ni onegaishimasu)', '💳 結帳用語')">
+            <div>
+              <div class="phrase-zh">結帳請幫我們分開算</div>
+              <div class="phrase-jp">お会計は別々にお願いします</div>
+              <div class="phrase-romaji">Okaikei wa betsubetsu ni onegaishimasu</div>
+            </div>
+            <span class="badge badge-primary">放大 🔍</span>
+          </div>
+
+          <div class="phrase-card" onclick="openFullscreenCard('新しい（あたらしい）サイズ・在庫（ざいこ）はありますか？', '請問有其他尺寸或全新庫存嗎？', '👟 挑雪靴／衣服')">
+            <div>
+              <div class="phrase-zh">請問有其他尺寸或全新庫存嗎？</div>
+              <div class="phrase-jp">他のサイズや在庫はありますか？</div>
+              <div class="phrase-romaji">Hoka no saizu ya zaiko wa arimasu ka?</div>
+            </div>
+            <span class="badge badge-primary">放大 🔍</span>
+          </div>
+
+          <div class="phrase-card" onclick="openFullscreenCard('すみません、写真（しゃしん）を撮（と）っていただけますか？', '不好意思，可以幫我們拍張照嗎？', '📸 旅遊拍照')">
+            <div>
+              <div class="phrase-zh">不好意思，可以幫我們拍照嗎？</div>
+              <div class="phrase-jp">写真を撮っていただけますか？</div>
+              <div class="phrase-romaji">Shashin o totte itadakemasu ka?</div>
+            </div>
+            <span class="badge badge-purple">放大 🔍</span>
+          </div>
+
+          <div class="phrase-card" onclick="openFullscreenCard('チェックイン前（まえ）ですが、荷物（にもつ）を預（あず）かってもらえますか？', '還沒到入住時間，請問可以先寄放行李嗎？', '🏨 飯店寄放')">
+            <div>
+              <div class="phrase-zh">還沒入住，請問可以先寄放行李嗎？</div>
+              <div class="phrase-jp">チェックイン前ですが、荷物を預かってもらえますか？</div>
+              <div class="phrase-romaji">Nimotsu o azukatte moraemasu ka?</div>
+            </div>
+            <span class="badge badge-success">放大 🔍</span>
+          </div>
+
+          <div class="phrase-card" onclick="openFullscreenCard('お水（みず）／お湯（ゆ）をいただけますか？', '請問可以給我冰水／熱開水嗎？', '🍜 餐廳需求')">
+            <div>
+              <div class="phrase-zh">請問可以給我水／熱開水嗎？</div>
+              <div class="phrase-jp">お水（お湯）をいただけますか？</div>
+              <div class="phrase-romaji">Omizu / Oyu o itadakemasu ka?</div>
+            </div>
+            <span class="badge badge-accent">放大 🔍</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contacts -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🆘 緊急救援與駐日聯絡電話</h3>
+        </div>
+        <ul class="note-list">
+          <li class="note-item">
+            <span class="note-icon">🚓</span>
+            <div><strong>日本報警專線：</strong> <a class="inline-link" href="tel:110">110</a> ｜ <strong>救護車 / 火警：</strong> <a class="inline-link" href="tel:119">119</a></div>
+          </li>
+          <li class="note-item">
+            <span class="note-icon">🇹🇼</span>
+            <div>
+              <strong>台北駐日經濟文化代表處 札幌分處：</strong><br/>
+              辦公室電話：<a class="inline-link" href="tel:+81-11-222-2930">011-222-2930</a><br/>
+              <strong>急難救助專線 (24H)：</strong><a class="inline-link" href="tel:+81-80-1460-2568">080-1460-2568</a><br/>
+              地址：北海道札幌市中央区北4条西4丁目1番地 伊藤ビル5階 (就在札幌站附近)
+            </div>
+          </li>
+          <li class="note-item">
+            <span class="note-icon">📞</span>
+            <div><strong>日本觀光局 Japan Visitor Hotline (24H 多語言含中文)：</strong><a class="inline-link" href="tel:050-3816-2787">050-3816-2787</a></div>
+          </li>
+          <li class="note-item">
+            <span class="note-icon">🏥</span>
+            <div><strong>旅平險理賠貼士：</strong>若發生班機延誤或就醫，請務必保留「航空公司延誤證明、登機證正本、所有消費/醫療收據正本」。</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
   </main>
 
-  <!-- Floating Back to Top Button -->
-  <button class="fab-top" type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲ 頂部</button>
+  <!-- Floating Action Group -->
+  <div class="fab-group">
+    <button class="fab-btn" type="button" onclick="openModal('taxiModal')" style="background:var(--accent);">🚕 司機卡</button>
+    <button class="fab-btn" type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲ 頂部</button>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">已複製！</div>
+
+  <!-- ==================== MODAL: GLOBAL SEARCH ==================== -->
+  <div class="modal-backdrop" id="searchModal" onclick="closeModalOnBackdrop(event, 'searchModal')">
+    <div class="modal-card">
+      <div class="card-header">
+        <h3 class="card-title">🔍 全行程快速搜尋</h3>
+        <button class="btn btn-outline btn-sm" type="button" onclick="closeModal('searchModal')">✕ 關閉</button>
+      </div>
+      <div class="inline-input-row" style="margin-top:0;margin-bottom:10px;">
+        <input type="text" id="globalSearchInput" placeholder="輸入關鍵字（如：拉麵、螃蟹、巴士、纜車、護照）" oninput="runGlobalSearch()" />
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+        <button class="btn btn-outline btn-sm" type="button" onclick="quickSearch('拉麵')">拉麵</button>
+        <button class="btn btn-outline btn-sm" type="button" onclick="quickSearch('巴士')">巴士</button>
+        <button class="btn btn-outline btn-sm" type="button" onclick="quickSearch('免稅')">免稅</button>
+        <button class="btn btn-outline btn-sm" type="button" onclick="quickSearch('雪靴')">雪靴</button>
+        <button class="btn btn-outline btn-sm" type="button" onclick="quickSearch('纜車')">纜車</button>
+      </div>
+      <div id="searchResults" style="max-height:50vh;overflow-y:auto;"></div>
+    </div>
+  </div>
 
   <!-- ==================== MODAL: TAXI JAPANESE CARD ==================== -->
   <div class="modal-backdrop" id="taxiModal" onclick="closeModalOnBackdrop(event, 'taxiModal')">
@@ -2218,48 +2968,95 @@
         <h3 class="card-title">🚕 計程車司機日文指路卡</h3>
         <button class="btn btn-outline btn-sm" type="button" onclick="closeModal('taxiModal')">✕ 關閉</button>
       </div>
-      <p style="font-size:12.5px;color:var(--text-secondary);margin-top:0;">請直接將畫面出示給計程車司機看：</p>
+      <p style="font-size:12.5px;color:var(--text-secondary);margin-top:0;">💡 點擊任何一張卡片可「<strong>全螢幕超大字體放大</strong>」，直接拿給司機看最清楚：</p>
 
-      <div class="taxi-jp-box">
+      <div class="taxi-jp-box" onclick="openFullscreenCard('ザ・ビー 札幌 (すすきの)', '札幌市中央区南3条西2丁目17-17', '🏨 飯店')">
         <div class="taxi-jp-label">🏨 飯店 (The b sapporo)</div>
         <div class="taxi-jp-name">ザ・ビー 札幌 (すすきの)</div>
         <div class="taxi-jp-addr">札幌市中央区南3条西2丁目17-17</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
       </div>
 
-      <div class="taxi-jp-box">
+      <div class="taxi-jp-box" onclick="openFullscreenCard('ワークマン プラス 札幌北野東北通店', '札幌市清田区北野7条2丁目9-13 (東北通沿い)', '🧦 Day 1 WORKMAN')">
         <div class="taxi-jp-label">🧦 Day 1 採買 (WORKMAN Plus 札幌北野東北通店)</div>
         <div class="taxi-jp-name">ワークマン プラス<br/>札幌北野東北通店</div>
         <div class="taxi-jp-addr">札幌市清田区北野7条2丁目9-13 (東北通沿い)</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
       </div>
 
-      <div class="taxi-jp-box">
-        <div class="taxi-jp-label">🛍️ Day 1 採買 (WORKMAN → Sports Depo 月寒店)</div>
+      <div class="taxi-jp-box" onclick="openFullscreenCard('スポーツデポ フラッグシップストア 札幌月寒店', '札幌市豊平区月寒中央通2丁目1-1 (国道36号線沿い)', '🛍️ Day 1 Sports Depo')">
+        <div class="taxi-jp-label">🛍️ Day 1 採買 (Sports Depo 月寒店)</div>
         <div class="taxi-jp-name">スポーツデポ フラッグシップストア<br/>札幌月寒店 (アルペンアウトドアーズ)</div>
         <div class="taxi-jp-addr">札幌市豊平区月寒中央通2丁目1-1 (国道36号線沿い)</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
       </div>
 
-      <div class="taxi-jp-box">
+      <div class="taxi-jp-box" onclick="openFullscreenCard('札幌駅 北口（鐘の広場）', '札幌市北区北6条西3丁目', '🚩 Day 2 集合點')">
+        <div class="taxi-jp-label">🚩 Day 2 一日遊集合點 (札幌站北口)</div>
+        <div class="taxi-jp-name">札幌駅 北口</div>
+        <div class="taxi-jp-addr">札幌市北区北6条西3丁目</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
+      </div>
+
+      <div class="taxi-jp-box" onclick="openFullscreenCard('すすきの焼肉 きらく', '札幌市中央区南6条西5丁目', '🥩 Day 2 晚餐燒肉')">
         <div class="taxi-jp-label">🥩 Day 2 晚餐 (燒肉 Kiraku)</div>
         <div class="taxi-jp-name">すすきの焼肉 きらく</div>
         <div class="taxi-jp-addr">札幌市中央区南6条西5丁目</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
+      </div>
+
+      <div class="taxi-jp-box" onclick="openFullscreenCard('小樽ジンギスカン倶楽部 北とうがらし 本店', '小樽市花園1丁目4-19', '🐑 Day 4 成吉思汗烤羊')">
+        <div class="taxi-jp-label">🐑 Day 4 晚餐 (小樽 北唐辛子 本店)</div>
+        <div class="taxi-jp-name">北とうがらし 本店</div>
+        <div class="taxi-jp-addr">小樽市花園1丁目4-19</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
+      </div>
+
+      <div class="taxi-jp-box" onclick="openFullscreenCard('北海道神宮', '札幌市中央区宮ヶ丘474', '⛩️ Day 5 北海道神宮')">
+        <div class="taxi-jp-label">⛩️ Day 5 景點 (北海道神宮)</div>
+        <div class="taxi-jp-name">北海道神宮</div>
+        <div class="taxi-jp-addr">札幌市中央区宮ヶ丘474</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
+      </div>
+
+      <div class="taxi-jp-box" onclick="openFullscreenCard('札幌かに家 札幌本店', '札幌市中央区南4条西2丁目', '🦀 Day 5 螃蟹大餐')">
+        <div class="taxi-jp-label">🦀 Day 5 晚餐 (札幌かに家 札幌本店)</div>
+        <div class="taxi-jp-name">札幌かに家 札幌本店</div>
+        <div class="taxi-jp-addr">札幌市中央区南4条西2丁目</div>
+        <div class="taxi-hint">🔍 點擊放大全螢幕</div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== MODAL: JPY CONVERTER ==================== -->
+  <!-- ==================== MODAL: FULLSCREEN DISPLAY ==================== -->
+  <div class="modal-backdrop" id="fullscreenModal" onclick="closeModalOnBackdrop(event, 'fullscreenModal')">
+    <div class="modal-card" style="background:transparent; box-shadow:none; padding:0;">
+      <div class="fullscreen-card">
+        <div class="fs-polite" id="fsLabel">すみません、ここまでお願いします</div>
+        <div class="fs-main" id="fsMain">--</div>
+        <div class="fs-sub" id="fsSub">--</div>
+        <div style="margin-top:22px; display:flex; gap:10px; justify-content:center;">
+          <button class="btn btn-primary" type="button" onclick="copyFullscreenText()">📋 複製文字</button>
+          <button class="btn btn-outline" type="button" onclick="closeModal('fullscreenModal')" style="background:rgba(255,255,255,0.15);color:#FFF;border-color:rgba(255,255,255,0.3);">✕ 關閉</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: JPY CONVERTER & TAX FREE ==================== -->
   <div class="modal-backdrop" id="jpyModal" onclick="closeModalOnBackdrop(event, 'jpyModal')">
     <div class="modal-card">
       <div class="card-header">
-        <h3 class="card-title">💴 簡易日幣匯率換算</h3>
+        <h3 class="card-title">💴 匯率與免稅折扣計算機</h3>
         <button class="btn btn-outline btn-sm" type="button" onclick="closeModal('jpyModal')">✕ 關閉</button>
       </div>
       <div class="calc-input-group">
         <div class="calc-row">
-          <label for="jpyInput">日幣 ¥</label>
+          <label for="jpyInput">標價 (¥)</label>
           <input type="number" id="jpyInput" placeholder="輸入日幣金額" oninput="convertFromJpy()" inputmode="decimal" />
         </div>
         <div class="calc-row">
-          <label for="twdInput">台幣 $</label>
+          <label for="twdInput">台幣 ($)</label>
           <input type="number" id="twdInput" placeholder="約合台幣" oninput="convertFromTwd()" inputmode="decimal" />
         </div>
         <div class="calc-row">
@@ -2267,11 +3064,25 @@
           <input type="number" id="rateInput" step="0.001" value="0.215" oninput="convertFromJpy()" inputmode="decimal" />
         </div>
       </div>
+
+      <!-- Tax-free & Discount Calculator -->
+      <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:11px; padding:11px; margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:800;margin-bottom:8px;color:var(--primary-light);">🏷️ 購物退稅／優惠券試算 (以「含稅標價 ¥」計)</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="calcDiscount(0.10, 0.07)">Bic Camera (免稅+7%)</button>
+          <button class="btn btn-outline btn-sm" type="button" onclick="calcDiscount(0.10, 0.05)">藥妝 (免稅+5%)</button>
+          <button class="btn btn-outline btn-sm" type="button" onclick="calcDiscount(0.10, 0)">僅免稅 10%</button>
+        </div>
+        <div id="discountResult" style="font-size:13px;color:var(--text-secondary);">請先輸入上方日幣標價，再點選試算按鈕</div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">常用行程票價快捷：</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <button class="btn btn-outline btn-sm" type="button" onclick="quickJpy(520)">¥520 (地鐵一日券)</button>
         <button class="btn btn-outline btn-sm" type="button" onclick="quickJpy(1150)">¥1,150 (JR機場)</button>
         <button class="btn btn-outline btn-sm" type="button" onclick="quickJpy(1500)">¥1,500 (機場巴士)</button>
         <button class="btn btn-outline btn-sm" type="button" onclick="quickJpy(2000)">¥2,000 (天狗山纜車)</button>
+        <button class="btn btn-outline btn-sm" type="button" onclick="quickJpy(5500)">¥5,500 (滿額免稅門檻)</button>
       </div>
     </div>
   </div>
@@ -2279,9 +3090,20 @@
   <script>
     const STORAGE_KEY_TAB = 'hokkaido_kita2_active_tab';
     const STORAGE_KEY_THEME = 'hokkaido_kita2_theme';
+    const STORAGE_KEY_SNOW = 'hokkaido_kita2_snow';
+    const STORAGE_KEY_EXP = 'hokkaido_kita2_expenses';
+    const STORAGE_KEY_CUSTOM_PACK = 'hokkaido_kita2_custom_pack';
     const CHECK_IDS = ['chk-rest-1', 'chk-rest-2', 'chk-rest-3', 'chk-tkt-1', 'chk-tkt-2'];
+    const PACK_COUNT = 16;
 
-    function switchTab(tabId) {
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[s]));
+    }
+
+    /* ---------------- Tab Switching ---------------- */
+    function switchTab(tabId, skipScrollTop) {
       document.querySelectorAll('.tab-panel').forEach(panel => {
         panel.classList.toggle('active', panel.id === tabId);
       });
@@ -2293,19 +3115,86 @@
         }
       });
       localStorage.setItem(STORAGE_KEY_TAB, tabId);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!skipScrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    /* ---------------- Copy Day Text ---------------- */
+    function copyDayText(dayKey, headerTitle) {
+      const container = document.getElementById('timeline-' + dayKey);
+      if (!container) return;
+      const lines = [`【北2北海道】${headerTitle}`];
+      container.querySelectorAll('.timeline-stop').forEach(stop => {
+        const time = stop.querySelector('.stop-time')?.textContent.trim() || '';
+        const title = stop.querySelector('.stop-title')?.textContent.trim() || '';
+        lines.push(`${time} ${title}`);
+      });
+      copyText(lines.join('\n'), '已複製本日時間表，可貼至 LINE！');
+    }
+
+    /* ---------------- Global Search ---------------- */
+    function openSearchModal() {
+      openModal('searchModal');
+      setTimeout(() => document.getElementById('globalSearchInput')?.focus(), 120);
+      runGlobalSearch();
+    }
+    function quickSearch(word) {
+      const input = document.getElementById('globalSearchInput');
+      if (input) { input.value = word; runGlobalSearch(); }
+    }
+    function runGlobalSearch() {
+      const q = (document.getElementById('globalSearchInput')?.value || '').trim().toLowerCase();
+      const box = document.getElementById('searchResults');
+      if (!box) return;
+      if (!q) {
+        box.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:12px;">輸入關鍵字即可跨 6 天快速搜尋所有景點、餐廳、交通提示與攻略</div>';
+        return;
+      }
+      const results = [];
+      const dayLabels = {
+        'tab-day1': 'Day 1 (11/25)', 'tab-day2': 'Day 2 (11/26)', 'tab-day3': 'Day 3 (11/27)',
+        'tab-day4': 'Day 4 (11/28)', 'tab-day5': 'Day 5 (11/29)', 'tab-day6': 'Day 6 (11/30)'
+      };
+      document.querySelectorAll('.timeline-stop').forEach(stop => {
+        const text = stop.textContent.toLowerCase();
+        if (text.includes(q)) {
+          const panel = stop.closest('.tab-panel');
+          const tabId = panel ? panel.id : 'tab-day1';
+          const time = stop.querySelector('.stop-time')?.textContent || '';
+          const title = stop.querySelector('.stop-title')?.textContent || '';
+          results.push({ tabId, stopId: stop.id, dayName: dayLabels[tabId] || tabId, time, title });
+        }
+      });
+      if (!results.length) {
+        box.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:12px;">找不到相符的行程項目</div>';
+        return;
+      }
+      box.innerHTML = results.map(r => `
+        <div class="search-result-item" onclick="jumpToStop('${r.tabId}','${r.stopId}')">
+          <div style="font-size:11.5px;font-weight:800;color:var(--primary-light);">${escapeHtml(r.dayName)} · ${escapeHtml(r.time)}</div>
+          <div style="font-size:14.5px;font-weight:800;margin-top:2px;">${escapeHtml(r.title)}</div>
+        </div>
+      `).join('');
+    }
+    function jumpToStop(tabId, stopId) {
+      closeModal('searchModal');
+      switchTab(tabId, true);
+      setTimeout(() => {
+        const el = document.getElementById(stopId);
+        if (el) {
+          el.classList.remove('hidden-by-filter');
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('pulse-focus');
+          setTimeout(() => el.classList.remove('pulse-focus'), 3300);
+        }
+      }, 100);
+    }
+
+    /* ---------------- Booking Checklists ---------------- */
     function toggleCheck(id, event) {
       const checkbox = document.getElementById(id);
       if (!checkbox) return;
-      if (event && event.target !== checkbox) {
-        checkbox.checked = !checkbox.checked;
-      }
-      const itemEl = checkbox.closest('.check-item');
-      if (itemEl) {
-        itemEl.classList.toggle('checked', checkbox.checked);
-      }
+      if (event && event.target !== checkbox) checkbox.checked = !checkbox.checked;
+      checkbox.closest('.check-item')?.classList.toggle('checked', checkbox.checked);
       localStorage.setItem('hokkaido_kita2_' + id, checkbox.checked ? '1' : '0');
       updateChecklistProgress();
     }
@@ -2316,12 +3205,126 @@
       const restDone = restIds.filter(id => document.getElementById(id)?.checked).length;
       const tktDone = tktIds.filter(id => document.getElementById(id)?.checked).length;
 
-      const restBadge = document.getElementById('restProgress');
-      const tktBadge = document.getElementById('ticketProgress');
-      if (restBadge) restBadge.textContent = `${restDone} / ${restIds.length} 完成`;
-      if (tktBadge) tktBadge.textContent = `${tktDone} / ${tktIds.length} 完成`;
+      document.getElementById('restProgress').textContent = `${restDone} / ${restIds.length} 完成`;
+      document.getElementById('restBar').style.width = `${(restDone / restIds.length) * 100}%`;
+      document.getElementById('ticketProgress').textContent = `${tktDone} / ${tktIds.length} 完成`;
+      document.getElementById('ticketBar').style.width = `${(tktDone / tktIds.length) * 100}%`;
     }
 
+    /* ---------------- Packing List (Fixed + Custom) ---------------- */
+    let customPacks = [];
+    function togglePack(id, event) {
+      const cb = document.getElementById(id);
+      if (!cb) return;
+      if (event && event.target !== cb) cb.checked = !cb.checked;
+      cb.closest('.check-item')?.classList.toggle('checked', cb.checked);
+      localStorage.setItem('hokkaido_kita2_' + id, cb.checked ? '1' : '0');
+      updatePackProgress();
+    }
+
+    function loadCustomPacks() {
+      try { customPacks = JSON.parse(localStorage.getItem(STORAGE_KEY_CUSTOM_PACK) || '[]'); }
+      catch(e) { customPacks = []; }
+      renderCustomPacks();
+    }
+
+    function addCustomPack() {
+      const inp = document.getElementById('customPackInput');
+      const txt = inp.value.trim();
+      if (!txt) return;
+      customPacks.push({ id: 'cp-' + Date.now(), text: txt, checked: false });
+      localStorage.setItem(STORAGE_KEY_CUSTOM_PACK, JSON.stringify(customPacks));
+      inp.value = '';
+      renderCustomPacks();
+      updatePackProgress();
+    }
+
+    function toggleCustomPack(id, event) {
+      const p = customPacks.find(x => x.id === id);
+      if (!p) return;
+      p.checked = !p.checked;
+      localStorage.setItem(STORAGE_KEY_CUSTOM_PACK, JSON.stringify(customPacks));
+      renderCustomPacks();
+      updatePackProgress();
+    }
+
+    function deleteCustomPack(id, event) {
+      event.stopPropagation();
+      customPacks = customPacks.filter(x => x.id !== id);
+      localStorage.setItem(STORAGE_KEY_CUSTOM_PACK, JSON.stringify(customPacks));
+      renderCustomPacks();
+      updatePackProgress();
+    }
+
+    function renderCustomPacks() {
+      const ul = document.getElementById('customPackList');
+      if (!ul) return;
+      ul.innerHTML = customPacks.map(p => `
+        <li class="check-item ${p.checked ? 'checked' : ''}" onclick="toggleCustomPack('${p.id}', event)">
+          <input type="checkbox" ${p.checked ? 'checked' : ''} onclick="event.stopPropagation();toggleCustomPack('${p.id}', event)" />
+          <div class="check-body">
+            <div class="check-title">${escapeHtml(p.text)}</div>
+          </div>
+          <button class="btn btn-outline btn-sm" style="padding:2px 7px;min-height:26px;" onclick="deleteCustomPack('${p.id}', event)">✕</button>
+        </li>
+      `).join('');
+    }
+
+    function updatePackProgress() {
+      let done = 0;
+      for (let i = 1; i <= PACK_COUNT; i++) {
+        if (document.getElementById('pack-' + i)?.checked) done++;
+      }
+      const customDone = customPacks.filter(p => p.checked).length;
+      const total = PACK_COUNT + customPacks.length;
+      const totalDone = done + customDone;
+      const badge = document.getElementById('packProgress');
+      const bar = document.getElementById('packBar');
+      if (badge) badge.textContent = `${totalDone} / ${total} 已打包`;
+      if (bar) bar.style.width = `${total ? (totalDone / total) * 100 : 0}%`;
+    }
+
+    /* ---------------- Timeline Visited & Filtering ---------------- */
+    function toggleVisited(stopId, dayKey) {
+      const el = document.getElementById(stopId);
+      if (!el) return;
+      const isVisited = el.classList.toggle('visited');
+      const btn = el.querySelector('.visit-toggle');
+      if (btn) btn.textContent = isVisited ? '✅ 已造訪' : '✓ 未完成';
+      localStorage.setItem('hokkaido_kita2_v_' + stopId, isVisited ? '1' : '0');
+      updateDayProgress(dayKey);
+    }
+
+    function updateDayProgress(dayKey) {
+      const container = document.getElementById('timeline-' + dayKey);
+      const badge = document.getElementById('progress-' + dayKey);
+      if (!container || !badge) return;
+      const stops = container.querySelectorAll('.timeline-stop');
+      const done = container.querySelectorAll('.timeline-stop.visited').length;
+      badge.textContent = `${done} / ${stops.length} 已完成`;
+    }
+
+    function filterTimeline(dayKey, category, chipBtn) {
+      const bar = document.querySelector(`.filter-bar[data-day="${dayKey}"]`);
+      if (bar) {
+        bar.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chipBtn.classList.add('active');
+      }
+      const container = document.getElementById('timeline-' + dayKey);
+      if (!container) return;
+      container.querySelectorAll('.timeline-stop').forEach(stop => {
+        if (category === 'all' || stop.getAttribute('data-cat') === category) {
+          stop.classList.remove('hidden-by-filter');
+        } else {
+          stop.classList.add('hidden-by-filter');
+        }
+      });
+      container.querySelectorAll('.timeline-connector').forEach(conn => {
+        conn.style.display = category === 'all' ? 'block' : 'none';
+      });
+    }
+
+    /* ---------------- Theme & Modals ---------------- */
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       const btn = document.getElementById('themeToggleBtn');
@@ -2335,38 +3338,48 @@
       localStorage.setItem(STORAGE_KEY_THEME, next);
     }
 
-    function openModal(id) {
-      document.getElementById(id)?.classList.add('open');
+    function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+    function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+    function closeModalOnBackdrop(event, id) { if (event.target.id === id) closeModal(id); }
+
+    function openFullscreenCard(mainText, subText, labelText) {
+      document.getElementById('fsLabel').textContent = labelText || 'すみません、お願いします';
+      document.getElementById('fsMain').textContent = mainText;
+      document.getElementById('fsSub').textContent = subText;
+      openModal('fullscreenModal');
     }
 
-    function closeModal(id) {
-      document.getElementById(id)?.classList.remove('open');
+    function copyFullscreenText() {
+      const t = document.getElementById('fsMain').textContent + ' ' + document.getElementById('fsSub').textContent;
+      copyText(t, '已複製日文內容');
     }
 
-    function closeModalOnBackdrop(event, id) {
-      if (event.target.id === id) closeModal(id);
+    function copyText(text, msg) {
+      navigator.clipboard?.writeText(text).then(() => showToast(msg || '已複製！')).catch(() => {
+        showToast('請長按文字複製');
+      });
     }
 
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    /* ---------------- Currency & Tax Calculator ---------------- */
     function convertFromJpy() {
       const jpy = parseFloat(document.getElementById('jpyInput').value);
       const rate = parseFloat(document.getElementById('rateInput').value) || 0.215;
       const twdEl = document.getElementById('twdInput');
-      if (isNaN(jpy)) {
-        twdEl.value = '';
-      } else {
-        twdEl.value = Math.round(jpy * rate);
-      }
+      twdEl.value = isNaN(jpy) ? '' : Math.round(jpy * rate);
     }
 
     function convertFromTwd() {
       const twd = parseFloat(document.getElementById('twdInput').value);
       const rate = parseFloat(document.getElementById('rateInput').value) || 0.215;
       const jpyEl = document.getElementById('jpyInput');
-      if (isNaN(twd) || rate === 0) {
-        jpyEl.value = '';
-      } else {
-        jpyEl.value = Math.round(twd / rate);
-      }
+      jpyEl.value = (isNaN(twd) || rate === 0) ? '' : Math.round(twd / rate);
     }
 
     function quickJpy(amount) {
@@ -2374,24 +3387,222 @@
       convertFromJpy();
     }
 
-    // Initialize state from localStorage
+    function calcDiscount(taxRate, extraRate) {
+      const raw = parseFloat(document.getElementById('jpyInput').value);
+      const rate = parseFloat(document.getElementById('rateInput').value) || 0.215;
+      const resEl = document.getElementById('discountResult');
+      if (isNaN(raw) || raw <= 0) {
+        resEl.innerHTML = '<span style="color:var(--accent);">⚠️ 請先在上方輸入標價 (¥)</span>';
+        return;
+      }
+      const taxFree = raw / (1 + taxRate);
+      const finalJpy = Math.round(taxFree * (1 - extraRate));
+      const savedJpy = Math.round(raw - finalJpy);
+      const finalTwd = Math.round(finalJpy * rate);
+      resEl.innerHTML = `
+        實付：<strong>¥${finalJpy.toLocaleString()}</strong> (約 <strong>NT$${finalTwd.toLocaleString()}</strong>)<br/>
+        <span style="color:var(--success);font-weight:700;">✨ 省下 ¥${savedJpy.toLocaleString()} (約 NT$${Math.round(savedJpy * rate).toLocaleString()})</span>
+      `;
+    }
+
+    /* ---------------- Expense Tracker ---------------- */
+    let expenses = [];
+    function loadExpenses() {
+      try { expenses = JSON.parse(localStorage.getItem(STORAGE_KEY_EXP) || '[]'); }
+      catch(e) { expenses = []; }
+      renderExpenses();
+    }
+
+    function addExpense() {
+      const title = document.getElementById('expTitle').value.trim();
+      const cat = document.getElementById('expCat').value;
+      const amount = parseFloat(document.getElementById('expAmount').value);
+      if (!title || isNaN(amount) || amount <= 0) {
+        showToast('請輸入項目名稱與正確日幣金額');
+        return;
+      }
+      expenses.unshift({ id: Date.now(), title, cat, amount });
+      localStorage.setItem(STORAGE_KEY_EXP, JSON.stringify(expenses));
+      document.getElementById('expTitle').value = '';
+      document.getElementById('expAmount').value = '';
+      renderExpenses();
+      showToast('已記下一筆花費');
+    }
+
+    function deleteExpense(id) {
+      expenses = expenses.filter(e => e.id !== id);
+      localStorage.setItem(STORAGE_KEY_EXP, JSON.stringify(expenses));
+      renderExpenses();
+    }
+
+    function renderExpenses() {
+      const list = document.getElementById('expenseList');
+      const empty = document.getElementById('expenseEmpty');
+      const rate = parseFloat(document.getElementById('rateInput')?.value) || 0.215;
+      let total = 0;
+      list.innerHTML = '';
+      expenses.forEach(e => {
+        total += e.amount;
+        const li = document.createElement('li');
+        li.className = 'expense-item';
+        li.innerHTML = `
+          <div><strong>${escapeHtml(e.cat)}</strong> ${escapeHtml(e.title)}</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="text-align:right;font-variant-numeric:tabular-nums;">
+              <strong>¥${e.amount.toLocaleString()}</strong>
+              <div style="font-size:11px;color:var(--text-muted);">≈NT$${Math.round(e.amount * rate).toLocaleString()}</div>
+            </div>
+            <button class="btn btn-outline btn-sm" style="padding:2px 7px;min-height:26px;" onclick="deleteExpense(${e.id})">✕</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+      empty.style.display = expenses.length ? 'none' : 'block';
+      document.getElementById('expTotalJpy').textContent = `¥${total.toLocaleString()}`;
+      document.getElementById('expTotalTwd').textContent = `NT$ ${Math.round(total * rate).toLocaleString()}`;
+    }
+
+    function exportExpenses() {
+      if (!expenses.length) { showToast('尚無消費紀錄可複製'); return; }
+      const rate = parseFloat(document.getElementById('rateInput')?.value) || 0.215;
+      let total = 0;
+      const lines = expenses.map(e => {
+        total += e.amount;
+        return `${e.cat} ${e.title}: ¥${e.amount.toLocaleString()}`;
+      });
+      lines.push(`---\n總計: ¥${total.toLocaleString()} (約 NT$${Math.round(total * rate).toLocaleString()})`);
+      copyText(lines.join('\n'), '已複製全部記帳明細！');
+    }
+
+    /* ---------------- Live Countdown & Dual Clock ---------------- */
+    function updateClocks() {
+      const now = new Date();
+      const twStr = now.toLocaleTimeString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false });
+      const jpStr = now.toLocaleTimeString('zh-TW', { timeZone: 'Asia/Tokyo', hour12: false });
+      document.getElementById('clockJP').textContent = '🇯🇵 ' + jpStr;
+      document.getElementById('clockTW').textContent = '🇹🇼 ' + twStr;
+
+      const target = new Date('2026-11-25T03:20:00+08:00').getTime();
+      const endTrip = new Date('2026-11-30T15:35:00+08:00').getTime();
+      const diff = target - now.getTime();
+      const labelEl = document.getElementById('countdownLabel');
+      const valEl = document.getElementById('countdownTimer');
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hrs = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        labelEl.textContent = '⏳ 距離出發集合 (11/25 03:20)';
+        valEl.textContent = `${days} 天 ${hrs} 時 ${mins} 分 ${secs} 秒`;
+      } else if (now.getTime() <= endTrip) {
+        const dayNum = Math.floor((now.getTime() - new Date('2026-11-25T00:00:00+08:00').getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        labelEl.textContent = '🎉 北海道夢幻旅程進行中';
+        valEl.textContent = `Day ${Math.min(Math.max(dayNum, 1), 6)} · 享受雪國之旅！`;
+      } else {
+        labelEl.textContent = '❄️ 北海道北2之旅圓滿完成';
+        valEl.textContent = '期待下次旅行！';
+      }
+    }
+
+    /* ---------------- Snowfall Effect ---------------- */
+    let snowEnabled = true;
+    function initSnow() {
+      const canvas = document.getElementById('snowCanvas');
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+      const flakes = Array.from({ length: 42 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 2.4 + 1.1,
+        s: Math.random() * 0.7 + 0.35,
+        d: Math.random() * 0.6 - 0.3
+      }));
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        if (snowEnabled) {
+          ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'dark'
+            ? 'rgba(255, 255, 255, 0.75)'
+            : 'rgba(14, 165, 233, 0.45)';
+          ctx.beginPath();
+          for (const f of flakes) {
+            ctx.moveTo(f.x, f.y);
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            f.y += f.s;
+            f.x += f.d + Math.sin(f.y * 0.01) * 0.3;
+            if (f.y > h) { f.y = -5; f.x = Math.random() * w; }
+            if (f.x > w) f.x = 0;
+            if (f.x < 0) f.x = w;
+          }
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    function toggleSnow() {
+      snowEnabled = !snowEnabled;
+      const canvas = document.getElementById('snowCanvas');
+      const btn = document.getElementById('snowToggleBtn');
+      canvas.classList.toggle('hidden', !snowEnabled);
+      btn.classList.toggle('off', !snowEnabled);
+      localStorage.setItem(STORAGE_KEY_SNOW, snowEnabled ? '1' : '0');
+      showToast(snowEnabled ? '❄️ 已開啟浪漫飄雪' : '飄雪已關閉');
+    }
+
+    /* ---------------- Initialization ---------------- */
     document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'light';
       applyTheme(savedTheme);
 
+      const savedSnow = localStorage.getItem(STORAGE_KEY_SNOW);
+      if (savedSnow === '0') {
+        snowEnabled = false;
+        document.getElementById('snowCanvas').classList.add('hidden');
+        document.getElementById('snowToggleBtn').classList.add('off');
+      }
+      initSnow();
+
       CHECK_IDS.forEach(id => {
-        const saved = localStorage.getItem('hokkaido_kita2_' + id);
-        const checkbox = document.getElementById(id);
-        if (checkbox && saved === '1') {
-          checkbox.checked = true;
-          checkbox.closest('.check-item')?.classList.add('checked');
+        if (localStorage.getItem('hokkaido_kita2_' + id) === '1') {
+          const cb = document.getElementById(id);
+          if (cb) { cb.checked = true; cb.closest('.check-item')?.classList.add('checked'); }
         }
       });
       updateChecklistProgress();
 
+      for (let i = 1; i <= PACK_COUNT; i++) {
+        const id = 'pack-' + i;
+        if (localStorage.getItem('hokkaido_kita2_' + id) === '1') {
+          const cb = document.getElementById(id);
+          if (cb) { cb.checked = true; cb.closest('.check-item')?.classList.add('checked'); }
+        }
+      }
+      loadCustomPacks();
+      updatePackProgress();
+
+      document.querySelectorAll('.timeline-stop').forEach(stop => {
+        if (localStorage.getItem('hokkaido_kita2_v_' + stop.id) === '1') {
+          stop.classList.add('visited');
+          const btn = stop.querySelector('.visit-toggle');
+          if (btn) btn.textContent = '✅ 已造訪';
+        }
+      });
+      ['day1','day2','day3','day4','day5','day6'].forEach(updateDayProgress);
+
+      loadExpenses();
+      updateClocks();
+      setInterval(updateClocks, 1000);
+
       const savedTab = localStorage.getItem(STORAGE_KEY_TAB);
       if (savedTab && document.getElementById(savedTab)) {
-        switchTab(savedTab);
+        switchTab(savedTab, true);
       }
     });
   </script>
